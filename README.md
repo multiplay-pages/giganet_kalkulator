@@ -1,0 +1,2 @@
+# giganet_kalkulator
+GigaNET_Kalkulator
