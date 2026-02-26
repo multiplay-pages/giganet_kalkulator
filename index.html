@@ -3,393 +3,365 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kalkulator Oferty GigaNet 3.1 – v2.0</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="theme-color" content="#5b57f7" />
+  <title>Kalkulator Oferty GigaNet 3.1 – v3.0</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="script.js" defer></script>
 </head>
 <body>
-  <header class="hero-shell">
-    <div class="max-w-7xl mx-auto px-4 py-10 md:py-14">
-      <div class="flex flex-col gap-6">
-        <div class="soft-badge w-fit">✨ Wersja 2.0 • styl premium / Canva-like</div>
+  <header class="hero">
+    <div class="container">
+      <div class="hero-badge">✨ Wersja 3.0 • osobne pliki • GitHub Pages ready</div>
 
-        <div class="max-w-3xl">
-          <h1 class="text-4xl md:text-6xl font-black text-white leading-tight">
+      <div class="hero-content">
+        <div class="hero-copy">
+          <h1>
             Kalkulator Oferty
-            <span class="block text-white/90">GigaNet 3.1</span>
+            <span>GigaNet 3.1</span>
           </h1>
-          <p class="mt-4 text-white/85 text-base md:text-xl leading-relaxed max-w-2xl">
-            Interaktywny kalkulator do szybkiej konfiguracji internetu, dodatków i ceny końcowej —
-            z układem bardziej sprzedażowym, czytelnym i przyjemnym dla oka.
+          <p>
+            Elegancki kalkulator w stylu premium / Canva-like, z lepszym mobile,
+            większymi kaflami i czytelnym podsumowaniem ceny.
           </p>
         </div>
 
-        <div class="grid sm:grid-cols-3 gap-3 max-w-3xl">
-          <div class="glass-card px-4 py-4 text-white">
-            <div class="text-white/75 text-xs uppercase tracking-wide font-semibold">Konfiguracja</div>
-            <div class="mt-1 font-bold text-lg">Klikasz i liczysz</div>
+        <div class="hero-highlights">
+          <div class="hero-card">
+            <div class="hero-card-label">Konfiguracja</div>
+            <div class="hero-card-value">Klikasz i liczysz</div>
           </div>
-          <div class="glass-card px-4 py-4 text-white">
-            <div class="text-white/75 text-xs uppercase tracking-wide font-semibold">Mobile</div>
-            <div class="mt-1 font-bold text-lg">Lepsze kafle i spacing</div>
+          <div class="hero-card">
+            <div class="hero-card-label">Kod</div>
+            <div class="hero-card-value">HTML + CSS + JS</div>
           </div>
-          <div class="glass-card px-4 py-4 text-white">
-            <div class="text-white/75 text-xs uppercase tracking-wide font-semibold">Sprzedaż</div>
-            <div class="mt-1 font-bold text-lg">Mocniejsze CTA</div>
+          <div class="hero-card">
+            <div class="hero-card-label">Publikacja</div>
+            <div class="hero-card-value">GitHub Pages</div>
           </div>
         </div>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-8 md:py-10">
-    <div class="grid lg:grid-cols-3 gap-8">
-      <section class="lg:col-span-2 space-y-8">
+  <main class="container main-grid">
+    <section class="left-column">
 
-        <div class="section-card p-6 md:p-8">
-          <div class="flex items-center gap-3 mb-6">
-            <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white font-black flex items-center justify-center">1</div>
-            <div>
-              <h2 class="text-2xl md:text-3xl font-black">Parametry oferty</h2>
-              <p class="text-slate-500 text-sm mt-1">Najpierw bazowa konfiguracja, bez czarów i bez zgadywania.</p>
-            </div>
-          </div>
-
-          <div class="space-y-8">
-            <div>
-              <div class="mini-label mb-3">Okres umowy</div>
-              <div class="grid sm:grid-cols-2 gap-4">
-                <button class="choice-card" data-group="commitment" data-value="12">
-                  <div class="card-icon">⏱️</div>
-                  <div class="card-title">12 miesięcy</div>
-                  <div class="card-sub">krótsze zobowiązanie</div>
-                </button>
-                <button class="choice-card" data-group="commitment" data-value="24">
-                  <div class="card-icon">⏳</div>
-                  <div class="card-title">24 miesiące</div>
-                  <div class="card-sub">korzystniejsza cena</div>
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <div class="mini-label mb-3">Typ budynku</div>
-              <div class="grid sm:grid-cols-2 gap-4">
-                <button class="choice-card" data-group="building" data-value="SFH">
-                  <div class="card-icon">🏡</div>
-                  <div class="card-title">Domek (SFH)</div>
-                  <div class="card-sub">dom jednorodzinny</div>
-                </button>
-                <button class="choice-card" data-group="building" data-value="MFH">
-                  <div class="card-icon">🏢</div>
-                  <div class="card-title">Blok (MFH)</div>
-                  <div class="card-sub">budynek wielorodzinny</div>
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <div class="mini-label mb-3">Status klienta</div>
-              <div class="grid sm:grid-cols-2 gap-4">
-                <button class="choice-card" data-group="status" data-value="Nowy">
-                  <div class="card-icon">✨</div>
-                  <div class="card-title">Nowy klient</div>
-                  <div class="card-sub">pierwsza umowa</div>
-                </button>
-                <button class="choice-card" data-group="status" data-value="Obecny">
-                  <div class="card-icon">♻️</div>
-                  <div class="card-title">Obecny klient</div>
-                  <div class="card-sub">przedłużenie / zmiana</div>
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <div class="mini-label mb-3">Taryfa internetowa</div>
-              <div class="grid grid-cols-2 xl:grid-cols-4 gap-4">
-                <button class="choice-card" data-group="tariff" data-value="600/100">
-                  <div class="card-icon">🌐</div>
-                  <div class="card-title">600 / 100</div>
-                  <div class="card-sub">stabilny standard</div>
-                </button>
-                <button class="choice-card" data-group="tariff" data-value="800/200">
-                  <div class="card-icon">🚀</div>
-                  <div class="card-title">800 / 200</div>
-                  <div class="card-sub">szybciej i wygodniej</div>
-                </button>
-                <button class="choice-card" data-group="tariff" data-value="1000/300">
-                  <div class="card-icon">⚡</div>
-                  <div class="card-title">1000 / 300</div>
-                  <div class="card-sub">mocny wariant</div>
-                </button>
-                <button class="choice-card" data-group="tariff" data-value="2000/2000">
-                  <div class="card-icon">🔥</div>
-                  <div class="card-title">2000 / 2000</div>
-                  <div class="card-sub">wersja turbo</div>
-                </button>
-              </div>
-            </div>
+      <!-- PARAMETRY -->
+      <section class="panel">
+        <div class="panel-head">
+          <div class="step-badge step-indigo">1</div>
+          <div>
+            <h2>Parametry oferty</h2>
+            <p>Tu ustawiasz bazę, czyli szkielet całej wyceny.</p>
           </div>
         </div>
 
-        <div class="section-card p-6 md:p-8">
-          <div class="flex items-center gap-3 mb-6">
-            <div class="w-10 h-10 rounded-2xl bg-amber-500 text-white font-black flex items-center justify-center">2</div>
-            <div>
-              <h2 class="text-2xl md:text-3xl font-black">Zgody i rabaty</h2>
-              <p class="text-slate-500 text-sm mt-1">Brak zgody nie boli fizycznie, ale cenowo już trochę tak.</p>
-            </div>
-          </div>
-
-          <div class="grid md:grid-cols-2 gap-4">
-            <button class="toggle-card" data-toggle="efaktura">
-              <div class="card-icon">📧</div>
-              <div class="card-title">E-faktura</div>
-              <div class="card-sub">rabat 10 zł / mies.</div>
+        <div class="config-block">
+          <div class="block-label">Okres umowy</div>
+          <div class="card-grid cols-2">
+            <button class="select-card" data-group="commitment" data-value="12">
+              <div class="card-icon">⏱️</div>
+              <div class="card-title">12 miesięcy</div>
+              <div class="card-sub">krótsze zobowiązanie</div>
             </button>
-
-            <button class="toggle-card" data-toggle="marketing">
-              <div class="card-icon">📢</div>
-              <div class="card-title">Zgoda marketingowa</div>
-              <div class="card-sub">rabat 5 zł / mies.</div>
-            </button>
-          </div>
-
-          <div class="mt-5 grid sm:grid-cols-2 gap-3">
-            <div class="pill-info">Brak e-faktury = +10 zł / mies.</div>
-            <div class="pill-info">Brak zgody marketingowej = +5 zł / mies.</div>
-          </div>
-        </div>
-
-        <div class="section-card p-6 md:p-8">
-          <div class="flex items-center gap-3 mb-6">
-            <div class="w-10 h-10 rounded-2xl bg-cyan-600 text-white font-black flex items-center justify-center">3</div>
-            <div>
-              <h2 class="text-2xl md:text-3xl font-black">Telefon stacjonarny</h2>
-              <p class="text-slate-500 text-sm mt-1">Opcjonalny. Czyli można, ale nie trzeba komplikować sobie życia.</p>
-            </div>
-          </div>
-
-          <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-            <button class="choice-card" data-group="phone" data-value="off">
-              <div class="card-icon">🚫</div>
-              <div class="card-title">Bez telefonu</div>
-              <div class="card-sub">0 zł / mies.</div>
-            </button>
-
-            <button class="choice-card" data-group="phone" data-value="UE60">
-              <div class="card-icon">📞</div>
-              <div class="card-title">UE 60</div>
-              <div class="card-sub">9,99 zł / mies.</div>
-            </button>
-
-            <button class="choice-card" data-group="phone" data-value="UE300">
-              <div class="card-icon">☎️</div>
-              <div class="card-title">300 UE</div>
-              <div class="card-sub">14,99 zł / mies.</div>
-            </button>
-
-            <button class="choice-card" data-group="phone" data-value="NoLimit">
-              <div class="card-icon">📱</div>
-              <div class="card-title">NoLimit Max</div>
-              <div class="card-sub">19,99 zł / mies.</div>
+            <button class="select-card" data-group="commitment" data-value="24">
+              <div class="card-icon">⏳</div>
+              <div class="card-title">24 miesiące</div>
+              <div class="card-sub">lepsza cena</div>
             </button>
           </div>
         </div>
 
-        <div class="section-card p-6 md:p-8">
-          <div class="flex items-center gap-3 mb-6">
-            <div class="w-10 h-10 rounded-2xl bg-fuchsia-600 text-white font-black flex items-center justify-center">4</div>
-            <div>
-              <h2 class="text-2xl md:text-3xl font-black">Usługi dodatkowe</h2>
-              <p class="text-slate-500 text-sm mt-1">Tu zaczyna się magia dodatków. I rachunek też.</p>
-            </div>
+        <div class="config-block">
+          <div class="block-label">Typ budynku</div>
+          <div class="card-grid cols-2">
+            <button class="select-card" data-group="building" data-value="SFH">
+              <div class="card-icon">🏡</div>
+              <div class="card-title">Domek (SFH)</div>
+              <div class="card-sub">jednorodzinny</div>
+            </button>
+            <button class="select-card" data-group="building" data-value="MFH">
+              <div class="card-icon">🏢</div>
+              <div class="card-title">Blok (MFH)</div>
+              <div class="card-sub">wielorodzinny</div>
+            </button>
           </div>
+        </div>
 
-          <div class="space-y-8">
-            <div>
-              <div class="mini-label mb-3">Dodatki włącz / wyłącz</div>
-              <div class="grid md:grid-cols-2 gap-4">
-                <button class="toggle-card" data-toggle="symmetric">
-                  <div class="card-icon">⚡</div>
-                  <div class="card-title">Łącze symetryczne</div>
-                  <div class="card-sub">10 zł / mies.</div>
-                </button>
+        <div class="config-block">
+          <div class="block-label">Status klienta</div>
+          <div class="card-grid cols-2">
+            <button class="select-card" data-group="status" data-value="Nowy">
+              <div class="card-icon">✨</div>
+              <div class="card-title">Nowy klient</div>
+              <div class="card-sub">pierwsza umowa</div>
+            </button>
+            <button class="select-card" data-group="status" data-value="Obecny">
+              <div class="card-icon">♻️</div>
+              <div class="card-title">Obecny klient</div>
+              <div class="card-sub">przedłużenie / zmiana</div>
+            </button>
+          </div>
+        </div>
 
-                <button class="toggle-card" data-toggle="internetPlus">
-                  <div class="card-icon">🌐</div>
-                  <div class="card-title">Internet+</div>
-                  <div class="card-sub">10 zł / mies.</div>
-                </button>
-
-                <button class="toggle-card" data-toggle="wifiPremium">
-                  <div class="card-icon">📶</div>
-                  <div class="card-title">WiFi Premium</div>
-                  <div class="card-sub">20 zł / mies. + 89 zł aktywacja</div>
-                </button>
-
-                <button class="toggle-card" data-toggle="renewalDiscount" id="renewal-discount-btn">
-                  <div class="card-icon">🎯</div>
-                  <div class="card-title">Rabat odnowieniowy</div>
-                  <div class="card-sub">symetryk za 5 zł / mies.</div>
-                </button>
-              </div>
-
-              <div id="renewal-note" class="mt-4 text-sm text-slate-500">
-                Rabat odnowieniowy działa tylko dla obecnego klienta przy aktywnym łączu symetrycznym.
-              </div>
-            </div>
-
-            <div>
-              <div class="mini-label mb-3">Pakiet bezpieczeństwa (1 wariant naraz)</div>
-              <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                <button class="choice-card" data-group="security" data-value="off">
-                  <div class="card-icon">🧊</div>
-                  <div class="card-title">Bez pakietu</div>
-                  <div class="card-sub">0 zł / mies.</div>
-                </button>
-
-                <button class="choice-card" data-group="security" data-value="is1">
-                  <div class="card-icon">🛡️</div>
-                  <div class="card-title">Internet Security 1</div>
-                  <div class="card-sub">9 zł / mies.</div>
-                </button>
-
-                <button class="choice-card" data-group="security" data-value="is3">
-                  <div class="card-icon">🛡️</div>
-                  <div class="card-title">Internet Security 3</div>
-                  <div class="card-sub">14,99 zł / mies.</div>
-                </button>
-
-                <button class="choice-card" data-group="security" data-value="mobile">
-                  <div class="card-icon">📱</div>
-                  <div class="card-title">Mobile</div>
-                  <div class="card-sub">6 zł / mies.</div>
-                </button>
-
-                <button class="choice-card" data-group="security" data-value="family">
-                  <div class="card-icon">👨‍👩‍👧‍👦</div>
-                  <div class="card-title">Pakiet rodzinny</div>
-                  <div class="card-sub">20 zł / mies.</div>
-                </button>
-
-                <button class="choice-card" data-group="security" data-value="mac1">
-                  <div class="card-icon">🍎</div>
-                  <div class="card-title">Mac 1</div>
-                  <div class="card-sub">9 zł / mies.</div>
-                </button>
-
-                <button class="choice-card" data-group="security" data-value="mac3">
-                  <div class="card-icon">🍏</div>
-                  <div class="card-title">Mac 3</div>
-                  <div class="card-sub">14,99 zł / mies.</div>
-                </button>
-              </div>
-            </div>
+        <div class="config-block">
+          <div class="block-label">Taryfa internetowa</div>
+          <div class="card-grid cols-4">
+            <button class="select-card" data-group="tariff" data-value="600/100">
+              <div class="card-icon">🌐</div>
+              <div class="card-title">600 / 100</div>
+              <div class="card-sub">solidny standard</div>
+            </button>
+            <button class="select-card" data-group="tariff" data-value="800/200">
+              <div class="card-icon">🚀</div>
+              <div class="card-title">800 / 200</div>
+              <div class="card-sub">szybciej</div>
+            </button>
+            <button class="select-card" data-group="tariff" data-value="1000/300">
+              <div class="card-icon">⚡</div>
+              <div class="card-title">1000 / 300</div>
+              <div class="card-sub">mocniej</div>
+            </button>
+            <button class="select-card" data-group="tariff" data-value="2000/2000">
+              <div class="card-icon">🔥</div>
+              <div class="card-title">2000 / 2000</div>
+              <div class="card-sub">pełne turbo</div>
+            </button>
           </div>
         </div>
       </section>
 
-      <aside>
-        <div class="summary-panel space-y-6">
-          <div class="glass-card p-6 md:p-7">
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <div class="mini-label">Podsumowanie oferty</div>
-                <h2 class="text-2xl md:text-3xl font-black mt-1">Cena końcowa</h2>
-              </div>
-              <div class="soft-badge !text-slate-700 !bg-white/70 !border-white/70">💎 Premium UI</div>
-            </div>
-
-            <div class="mt-6 grid grid-cols-2 gap-4">
-              <div class="rounded-3xl bg-white/78 border border-white/80 p-5">
-                <div class="text-xs font-semibold uppercase tracking-wide text-slate-500">Miesięcznie</div>
-                <div id="monthly-total" class="mt-2 text-3xl md:text-4xl font-black price-gradient">85 zł</div>
-              </div>
-
-              <div class="rounded-3xl bg-white/78 border border-white/80 p-5">
-                <div class="text-xs font-semibold uppercase tracking-wide text-slate-500">Jednorazowo</div>
-                <div id="one-time-total" class="mt-2 text-2xl md:text-3xl font-black text-orange-600">249 zł</div>
-              </div>
-            </div>
-
-            <div class="mt-6 space-y-3">
-              <div class="flex justify-between text-sm">
-                <span class="text-slate-500">Okres</span>
-                <strong id="detail-commitment">24 miesiące</strong>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-slate-500">Budynek</span>
-                <strong id="detail-building">Domek (SFH)</strong>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-slate-500">Status</span>
-                <strong id="detail-status">Nowy klient</strong>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-slate-500">Taryfa</span>
-                <strong id="detail-tariff">600/100</strong>
-              </div>
-            </div>
-
-            <div class="line-divider my-5"></div>
-
-            <div class="space-y-3 text-sm">
-              <div class="flex justify-between">
-                <span class="text-slate-500">Abonament bazowy</span>
-                <strong id="line-base">85 zł</strong>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-500">Korekty za zgody</span>
-                <strong id="line-consents">0 zł</strong>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-500">Telefon</span>
-                <strong id="line-phone">0 zł</strong>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-500">Dodatki</span>
-                <strong id="line-addons">0 zł</strong>
-              </div>
-            </div>
-
-            <div class="line-divider my-5"></div>
-
-            <div class="space-y-3 text-sm">
-              <div class="flex justify-between">
-                <span class="text-slate-500">Instalacja</span>
-                <strong id="line-install">249 zł</strong>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-500">Aktywacja dodatków</span>
-                <strong id="line-activation">0 zł</strong>
-              </div>
-            </div>
-
-            <div class="mt-6 rounded-3xl bg-gradient-to-r from-indigo-50 via-fuchsia-50 to-cyan-50 border border-indigo-100 p-5">
-              <div class="text-sm font-bold text-slate-800">Najprostsza decyzja</div>
-              <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-                Skonfiguruj ofertę, pokaż klientowi cenę i gotowe — mniej klikania, mniej chaosu, więcej konkretu.
-              </p>
-            </div>
-
-            <button class="cta-button mt-6">🚀 Zamów tę konfigurację</button>
-
-            <div class="mt-4 text-xs text-slate-500 leading-relaxed">
-              Brak e-faktury = +10 zł / mies. • Brak zgody marketingowej = +5 zł / mies. • WiFi Premium = 89 zł aktywacji.
-            </div>
-          </div>
-
-          <div class="section-card p-6">
-            <div class="mini-label">Transparentny breakdown</div>
-            <h3 class="text-xl font-black mt-1 mb-4">Rozpiska kalkulacji</h3>
-            <div id="breakdown" class="space-y-1"></div>
+      <!-- ZGODY -->
+      <section class="panel">
+        <div class="panel-head">
+          <div class="step-badge step-orange">2</div>
+          <div>
+            <h2>Zgody i rabaty</h2>
+            <p>Rabat jest miły. Brak rabatu już trochę mniej.</p>
           </div>
         </div>
-      </aside>
-    </div>
-  </main>
 
-  <script src="script.js"></script>
+        <div class="card-grid cols-2">
+          <button class="toggle-card" data-toggle="efaktura">
+            <div class="card-icon">📧</div>
+            <div class="card-title">E-faktura</div>
+            <div class="card-sub">rabat 10 zł / mies.</div>
+          </button>
+
+          <button class="toggle-card" data-toggle="marketing">
+            <div class="card-icon">📢</div>
+            <div class="card-title">Zgoda marketingowa</div>
+            <div class="card-sub">rabat 5 zł / mies.</div>
+          </button>
+        </div>
+
+        <div class="info-pills">
+          <div class="info-pill">Brak e-faktury = +10 zł / mies.</div>
+          <div class="info-pill">Brak zgody marketingowej = +5 zł / mies.</div>
+        </div>
+      </section>
+
+      <!-- TELEFON -->
+      <section class="panel">
+        <div class="panel-head">
+          <div class="step-badge step-cyan">3</div>
+          <div>
+            <h2>Telefon stacjonarny</h2>
+            <p>Opcjonalnie. Czyli bez presji, bez dramatu.</p>
+          </div>
+        </div>
+
+        <div class="card-grid cols-4">
+          <button class="select-card" data-group="phone" data-value="off">
+            <div class="card-icon">🚫</div>
+            <div class="card-title">Bez telefonu</div>
+            <div class="card-sub">0 zł / mies.</div>
+          </button>
+
+          <button class="select-card" data-group="phone" data-value="UE60">
+            <div class="card-icon">📞</div>
+            <div class="card-title">UE 60</div>
+            <div class="card-sub">9,99 zł / mies.</div>
+          </button>
+
+          <button class="select-card" data-group="phone" data-value="UE300">
+            <div class="card-icon">☎️</div>
+            <div class="card-title">300 UE</div>
+            <div class="card-sub">14,99 zł / mies.</div>
+          </button>
+
+          <button class="select-card" data-group="phone" data-value="NoLimit">
+            <div class="card-icon">📱</div>
+            <div class="card-title">NoLimit Max</div>
+            <div class="card-sub">19,99 zł / mies.</div>
+          </button>
+        </div>
+      </section>
+
+      <!-- DODATKI -->
+      <section class="panel">
+        <div class="panel-head">
+          <div class="step-badge step-pink">4</div>
+          <div>
+            <h2>Usługi dodatkowe</h2>
+            <p>Tu zaczynają się dodatki, promocje i inne małe potwory abonamentowe.</p>
+          </div>
+        </div>
+
+        <div class="config-block">
+          <div class="block-label">Dodatki włącz / wyłącz</div>
+          <div class="card-grid cols-2">
+            <button class="toggle-card" data-toggle="symmetric">
+              <div class="card-icon">⚡</div>
+              <div class="card-title">Łącze symetryczne</div>
+              <div class="card-sub">10 zł / mies.</div>
+            </button>
+
+            <button class="toggle-card" data-toggle="internetPlus">
+              <div class="card-icon">🌐</div>
+              <div class="card-title">Internet+</div>
+              <div class="card-sub">10 zł / mies.</div>
+            </button>
+
+            <button class="toggle-card" data-toggle="wifiPremium">
+              <div class="card-icon">📶</div>
+              <div class="card-title">WiFi Premium</div>
+              <div class="card-sub">20 zł / mies. + 89 zł aktywacja</div>
+            </button>
+
+            <button class="toggle-card" data-toggle="renewalDiscount" id="renewal-discount-btn">
+              <div class="card-icon">🎯</div>
+              <div class="card-title">Rabat odnowieniowy</div>
+              <div class="card-sub">symetryk za 5 zł / mies.</div>
+            </button>
+          </div>
+
+          <div class="helper-text" id="renewal-note">
+            Rabat odnowieniowy działa tylko dla obecnego klienta przy aktywnym łączu symetrycznym.
+          </div>
+        </div>
+
+        <div class="config-block">
+          <div class="block-label">Pakiet bezpieczeństwa (1 wariant naraz)</div>
+          <div class="card-grid cols-4">
+            <button class="select-card" data-group="security" data-value="off">
+              <div class="card-icon">🧊</div>
+              <div class="card-title">Bez pakietu</div>
+              <div class="card-sub">0 zł / mies.</div>
+            </button>
+
+            <button class="select-card" data-group="security" data-value="is1">
+              <div class="card-icon">🛡️</div>
+              <div class="card-title">Internet Security 1</div>
+              <div class="card-sub">9 zł / mies.</div>
+            </button>
+
+            <button class="select-card" data-group="security" data-value="is3">
+              <div class="card-icon">🛡️</div>
+              <div class="card-title">Internet Security 3</div>
+              <div class="card-sub">14,99 zł / mies.</div>
+            </button>
+
+            <button class="select-card" data-group="security" data-value="mobile">
+              <div class="card-icon">📱</div>
+              <div class="card-title">Mobile</div>
+              <div class="card-sub">6 zł / mies.</div>
+            </button>
+
+            <button class="select-card" data-group="security" data-value="family">
+              <div class="card-icon">👨‍👩‍👧‍👦</div>
+              <div class="card-title">Pakiet rodzinny</div>
+              <div class="card-sub">20 zł / mies.</div>
+            </button>
+
+            <button class="select-card" data-group="security" data-value="mac1">
+              <div class="card-icon">🍎</div>
+              <div class="card-title">Mac 1</div>
+              <div class="card-sub">9 zł / mies.</div>
+            </button>
+
+            <button class="select-card" data-group="security" data-value="mac3">
+              <div class="card-icon">🍏</div>
+              <div class="card-title">Mac 3</div>
+              <div class="card-sub">14,99 zł / mies.</div>
+            </button>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- PRAWA KOLUMNA -->
+    <aside class="right-column">
+      <div class="summary-stack">
+
+        <section class="panel summary-panel">
+          <div class="summary-top">
+            <div>
+              <div class="small-label">Podsumowanie oferty</div>
+              <h2 class="summary-title">Cena końcowa</h2>
+            </div>
+            <div class="summary-chip">💎 Premium UI</div>
+          </div>
+
+          <div class="summary-prices">
+            <div class="summary-price-card">
+              <div class="small-label">Miesięcznie</div>
+              <div id="monthly-total" class="price-main">85 zł</div>
+            </div>
+
+            <div class="summary-price-card">
+              <div class="small-label">Jednorazowo</div>
+              <div id="one-time-total" class="price-side">249 zł</div>
+            </div>
+          </div>
+
+          <div class="summary-details">
+            <div class="detail-row"><span>Okres</span><strong id="detail-commitment">24 miesiące</strong></div>
+            <div class="detail-row"><span>Budynek</span><strong id="detail-building">Domek (SFH)</strong></div>
+            <div class="detail-row"><span>Status</span><strong id="detail-status">Nowy klient</strong></div>
+            <div class="detail-row"><span>Taryfa</span><strong id="detail-tariff">600/100</strong></div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="summary-lines">
+            <div class="detail-row"><span>Abonament bazowy</span><strong id="line-base">85 zł</strong></div>
+            <div class="detail-row"><span>Korekty za zgody</span><strong id="line-consents">0 zł</strong></div>
+            <div class="detail-row"><span>Telefon</span><strong id="line-phone">0 zł</strong></div>
+            <div class="detail-row"><span>Dodatki</span><strong id="line-addons">0 zł</strong></div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="summary-lines">
+            <div class="detail-row"><span>Instalacja</span><strong id="line-install">249 zł</strong></div>
+            <div class="detail-row"><span>Aktywacja dodatków</span><strong id="line-activation">0 zł</strong></div>
+          </div>
+
+          <div class="promo-box">
+            <div class="promo-title">Najprostsza decyzja</div>
+            <p>
+              Skonfiguruj ofertę, pokaż klientowi cenę i gotowe. Mniej klikania, mniej chaosu,
+              więcej konkretu.
+            </p>
+          </div>
+
+          <button class="cta-button" type="button">🚀 Zamów tę konfigurację</button>
+
+          <div class="tiny-note">
+            Brak e-faktury = +10 zł / mies. • Brak zgody marketingowej = +5 zł / mies. •
+            WiFi Premium = 89 zł aktywacji.
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="small-label">Transparentny breakdown</div>
+          <h2 class="breakdown-title">Rozpiska kalkulacji</h2>
+          <div id="breakdown"></div>
+        </section>
+
+      </div>
+    </aside>
+  </main>
 </body>
 </html>
