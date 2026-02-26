@@ -1,226 +1,297 @@
-:root {
-  --brand-1: #6d5efc;
-  --brand-2: #8b5cf6;
-  --brand-3: #ec4899;
-  --brand-4: #06b6d4;
-  --bg-1: #f8fafc;
-  --bg-2: #eef2ff;
-  --line: rgba(255,255,255,0.5);
-  --shadow-xl: 0 24px 60px rgba(77, 64, 191, 0.14);
-  --shadow-lg: 0 14px 32px rgba(15, 23, 42, 0.10);
+const state = {
+  commitment: 24,
+  building: "SFH",
+  status: "Nowy",
+  tariff: "600/100",
+  efaktura: true,
+  marketing: true,
+  phone: "off",
+  symmetric: false,
+  renewalDiscount: false,
+  internetPlus: false,
+  wifiPremium: false,
+  security: "off"
+};
+
+const basePrices = {
+  12: {
+    SFH: { "600/100": 90, "800/200": 95, "1000/300": 105, "2000/2000": 165 },
+    MFH: { "600/100": 70, "800/200": 75, "1000/300": 85, "2000/2000": 145 }
+  },
+  24: {
+    SFH: { "600/100": 85, "800/200": 90, "1000/300": 100, "2000/2000": 160 },
+    MFH: { "600/100": 65, "800/200": 70, "1000/300": 80, "2000/2000": 140 }
+  }
+};
+
+const phonePrices = {
+  off: 0,
+  UE60: 9.99,
+  UE300: 14.99,
+  NoLimit: 19.99
+};
+
+const securityPrices = {
+  off: 0,
+  is1: 9.0,
+  is3: 14.99,
+  mobile: 6.0,
+  family: 20.0,
+  mac1: 9.0,
+  mac3: 14.99
+};
+
+function formatMoney(value) {
+  const num = Number(value);
+
+  if (Number.isInteger(num)) {
+    return `${num} zł`;
+  }
+
+  return `${num.toFixed(2).replace(".", ",")} zł`;
 }
 
-* { box-sizing: border-box; }
+function calculate() {
+  const base = basePrices[state.commitment][state.building][state.tariff];
 
-body {
-  margin: 0;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(139,92,246,0.16), transparent 32%),
-    radial-gradient(circle at top right, rgba(236,72,153,0.14), transparent 30%),
-    radial-gradient(circle at bottom left, rgba(6,182,212,0.12), transparent 26%),
-    linear-gradient(180deg, #f8fafc 0%, #eef2ff 55%, #f8fafc 100%);
-  color: #0f172a;
-  min-height: 100vh;
+  const consents =
+    (state.efaktura ? 0 : 10) +
+    (state.marketing ? 0 : 5);
+
+  let symmetric = 0;
+  if (state.symmetric) {
+    symmetric = state.status === "Obecny" && state.renewalDiscount ? 5 : 10;
+  }
+
+  const phone = phonePrices[state.phone] || 0;
+  const security = securityPrices[state.security] || 0;
+  const internetPlus = state.internetPlus ? 10 : 0;
+  const wifiPremium = state.wifiPremium ? 20 : 0;
+
+  const addons = symmetric + security + internetPlus + wifiPremium;
+  const monthly = base + consents + phone + addons;
+
+  const install = state.status === "Nowy" ? 249 : 0;
+  const activation = state.wifiPremium ? 89 : 0;
+  const oneTime = install + activation;
+
+  return {
+    base,
+    consents,
+    symmetric,
+    phone,
+    security,
+    internetPlus,
+    wifiPremium,
+    addons,
+    monthly,
+    install,
+    activation,
+    oneTime
+  };
 }
 
-.hero-shell {
-  position: relative;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 15% 20%, rgba(255,255,255,0.20), transparent 18%),
-    radial-gradient(circle at 85% 20%, rgba(255,255,255,0.14), transparent 20%),
-    linear-gradient(135deg, #4f46e5 0%, #7c3aed 45%, #db2777 100%);
-  border-bottom-left-radius: 32px;
-  border-bottom-right-radius: 32px;
-  box-shadow: var(--shadow-xl);
-}
+function normalizeState() {
+  const renewalAllowed = state.symmetric && state.status === "Obecny";
 
-.glass-card {
-  background: rgba(255,255,255,0.84);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.55);
-  border-radius: 28px;
-  box-shadow: var(--shadow-lg);
-}
-
-.section-card {
-  background: rgba(255,255,255,0.92);
-  border: 1px solid rgba(255,255,255,0.7);
-  border-radius: 28px;
-  box-shadow: var(--shadow-lg);
-}
-
-.soft-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.16);
-  border: 1px solid rgba(255,255,255,0.22);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.choice-card,
-.toggle-card {
-  width: 100%;
-  min-height: 112px;
-  border: 1.5px solid rgba(148,163,184,0.22);
-  border-radius: 24px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(248,250,252,0.96) 100%);
-  padding: 18px 16px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background .22s ease;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
-}
-
-.choice-card:hover,
-.toggle-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(99,102,241,0.36);
-  box-shadow: 0 16px 30px rgba(99,102,241,0.12);
-}
-
-.choice-card.active,
-.toggle-card.active {
-  color: #fff;
-  border-color: transparent;
-  background:
-    radial-gradient(circle at top left, rgba(255,255,255,0.16), transparent 26%),
-    linear-gradient(135deg, #5b57f7 0%, #7c3aed 45%, #ec4899 100%);
-  box-shadow: 0 18px 34px rgba(124,58,237,0.26);
-}
-
-.choice-card.disabled,
-.toggle-card.disabled {
-  opacity: 0.48;
-  cursor: not-allowed;
-  transform: none !important;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
-}
-
-.card-icon {
-  font-size: 26px;
-  line-height: 1;
-}
-
-.card-title {
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.25;
-}
-
-.card-sub {
-  font-size: 12px;
-  color: #64748b;
-  line-height: 1.35;
-}
-
-.choice-card.active .card-sub,
-.toggle-card.active .card-sub {
-  color: rgba(255,255,255,0.84);
-}
-
-.price-gradient {
-  background: linear-gradient(135deg, #4f46e5 0%, #9333ea 45%, #ec4899 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.summary-panel {
-  position: sticky;
-  top: 24px;
-}
-
-.pill-info {
-  border-radius: 999px;
-  padding: 10px 14px;
-  font-size: 12px;
-  font-weight: 600;
-  background: linear-gradient(135deg, rgba(79,70,229,0.08), rgba(236,72,153,0.10));
-  color: #4338ca;
-  border: 1px solid rgba(99,102,241,0.12);
-}
-
-.mini-label {
-  font-size: 12px;
-  color: #64748b;
-  font-weight: 600;
-  letter-spacing: .02em;
-  text-transform: uppercase;
-}
-
-.line-divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(148,163,184,0.35), transparent);
-}
-
-.cta-button {
-  width: 100%;
-  border: 0;
-  border-radius: 22px;
-  padding: 18px 20px;
-  font-weight: 800;
-  font-size: 16px;
-  color: #fff;
-  cursor: pointer;
-  background:
-    radial-gradient(circle at top left, rgba(255,255,255,0.20), transparent 26%),
-    linear-gradient(135deg, #4f46e5 0%, #7c3aed 52%, #db2777 100%);
-  box-shadow: 0 20px 34px rgba(124,58,237,0.28);
-  transition: transform .22s ease, box-shadow .22s ease;
-}
-
-.cta-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 24px 40px rgba(124,58,237,0.34);
-}
-
-.break-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 9px 0;
-  font-size: 14px;
-  border-bottom: 1px dashed rgba(148,163,184,0.18);
-}
-
-.break-row:last-child {
-  border-bottom: 0;
-}
-
-@media (max-width: 1024px) {
-  .summary-panel {
-    position: static;
+  if (!renewalAllowed) {
+    state.renewalDiscount = false;
   }
 }
 
-@media (max-width: 640px) {
-  .hero-shell {
-    border-bottom-left-radius: 24px;
-    border-bottom-right-radius: 24px;
-  }
+function updateSelectCards() {
+  document.querySelectorAll(".select-card[data-group]").forEach((button) => {
+    const group = button.dataset.group;
+    let value = button.dataset.value;
 
-  .glass-card,
-  .section-card {
-    border-radius: 24px;
-  }
+    if (group === "commitment") {
+      value = Number(value);
+    }
 
-  .choice-card,
-  .toggle-card {
-    min-height: 102px;
-    border-radius: 20px;
-  }
+    button.classList.toggle("active", state[group] === value);
+  });
 }
+
+function updateToggleCards() {
+  document.querySelectorAll(".toggle-card[data-toggle]").forEach((button) => {
+    const key = button.dataset.toggle;
+    button.classList.toggle("active", Boolean(state[key]));
+  });
+
+  const renewalButton = document.getElementById("renewal-discount-btn");
+  const renewalNote = document.getElementById("renewal-note");
+  const renewalAllowed = state.symmetric && state.status === "Obecny";
+
+  renewalButton.classList.toggle("disabled", !renewalAllowed);
+
+  renewalNote.textContent = renewalAllowed
+    ? "Rabat odnowieniowy jest dostępny dla tej konfiguracji."
+    : "Rabat odnowieniowy działa tylko dla obecnego klienta przy aktywnym łączu symetrycznym.";
+}
+
+function updateSummary(calc) {
+  document.getElementById("detail-commitment").textContent = `${state.commitment} miesięcy`;
+  document.getElementById("detail-building").textContent =
+    state.building === "SFH" ? "Domek (SFH)" : "Blok (MFH)";
+  document.getElementById("detail-status").textContent =
+    state.status === "Nowy" ? "Nowy klient" : "Obecny klient";
+  document.getElementById("detail-tariff").textContent = state.tariff;
+
+  document.getElementById("monthly-total").textContent = formatMoney(calc.monthly);
+  document.getElementById("one-time-total").textContent = formatMoney(calc.oneTime);
+
+  document.getElementById("line-base").textContent = formatMoney(calc.base);
+  document.getElementById("line-consents").textContent =
+    calc.consents > 0 ? `+ ${formatMoney(calc.consents)}` : "0 zł";
+  document.getElementById("line-phone").textContent =
+    calc.phone > 0 ? `+ ${formatMoney(calc.phone)}` : "0 zł";
+  document.getElementById("line-addons").textContent =
+    calc.addons > 0 ? `+ ${formatMoney(calc.addons)}` : "0 zł";
+  document.getElementById("line-install").textContent = formatMoney(calc.install);
+  document.getElementById("line-activation").textContent =
+    calc.activation > 0 ? `+ ${formatMoney(calc.activation)}` : "0 zł";
+}
+
+function buildBreakdown(calc) {
+  const rows = [];
+
+  rows.push(`
+    <div class="break-row">
+      <span>1. Cena bazowa</span>
+      <strong>${formatMoney(calc.base)}</strong>
+    </div>
+  `);
+
+  rows.push(`
+    <div class="break-row ${calc.consents > 0 ? "break-red" : "break-green"}">
+      <span>2. Zgody / brak zgód</span>
+      <strong>${calc.consents > 0 ? "+ " + formatMoney(calc.consents) : "0 zł"}</strong>
+    </div>
+  `);
+
+  if (calc.symmetric > 0) {
+    rows.push(`
+      <div class="break-row break-indigo">
+        <span>3. Łącze symetryczne</span>
+        <strong>+ ${formatMoney(calc.symmetric)}</strong>
+      </div>
+    `);
+  }
+
+  if (calc.phone > 0) {
+    rows.push(`
+      <div class="break-row break-cyan">
+        <span>4. Telefon (${state.phone})</span>
+        <strong>+ ${formatMoney(calc.phone)}</strong>
+      </div>
+    `);
+  }
+
+  if (calc.security > 0) {
+    rows.push(`
+      <div class="break-row break-pink">
+        <span>5. Bezpieczeństwo (${state.security})</span>
+        <strong>+ ${formatMoney(calc.security)}</strong>
+      </div>
+    `);
+  }
+
+  if (calc.internetPlus > 0) {
+    rows.push(`
+      <div class="break-row break-green">
+        <span>6. Internet+</span>
+        <strong>+ ${formatMoney(calc.internetPlus)}</strong>
+      </div>
+    `);
+  }
+
+  if (calc.wifiPremium > 0) {
+    rows.push(`
+      <div class="break-row break-orange">
+        <span>7. WiFi Premium</span>
+        <strong>+ ${formatMoney(calc.wifiPremium)}</strong>
+      </div>
+    `);
+  }
+
+  rows.push(`
+    <div class="break-row break-bold">
+      <span>Razem miesięcznie</span>
+      <strong>${formatMoney(calc.monthly)}</strong>
+    </div>
+  `);
+
+  rows.push(`
+    <div class="break-row">
+      <span>8. Instalacja</span>
+      <strong>${formatMoney(calc.install)}</strong>
+    </div>
+  `);
+
+  if (calc.activation > 0) {
+    rows.push(`
+      <div class="break-row break-orange">
+        <span>9. Aktywacja dodatków</span>
+        <strong>+ ${formatMoney(calc.activation)}</strong>
+      </div>
+    `);
+  }
+
+  rows.push(`
+    <div class="break-row break-bold">
+      <span>Razem jednorazowo</span>
+      <strong>${formatMoney(calc.oneTime)}</strong>
+    </div>
+  `);
+
+  document.getElementById("breakdown").innerHTML = rows.join("");
+}
+
+function render() {
+  normalizeState();
+  const calc = calculate();
+
+  updateSelectCards();
+  updateToggleCards();
+  updateSummary(calc);
+  buildBreakdown(calc);
+}
+
+function bindSelectCards() {
+  document.querySelectorAll(".select-card[data-group]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const group = button.dataset.group;
+      let value = button.dataset.value;
+
+      if (group === "commitment") {
+        value = Number(value);
+      }
+
+      state[group] = value;
+      render();
+    });
+  });
+}
+
+function bindToggleCards() {
+  document.querySelectorAll(".toggle-card[data-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const key = button.dataset.toggle;
+
+      if (key === "renewalDiscount" && !(state.symmetric && state.status === "Obecny")) {
+        return;
+      }
+
+      state[key] = !state[key];
+      render();
+    });
+  });
+}
+
+function initCalculator() {
+  bindSelectCards();
+  bindToggleCards();
+  render();
+}
+
+initCalculator();
