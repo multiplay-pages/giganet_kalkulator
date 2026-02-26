@@ -33,21 +33,17 @@ const phonePrices = {
 
 const securityPrices = {
   off: 0,
-  is1: 9.0,
+  is1: 9.00,
   is3: 14.99,
-  mobile: 6.0,
-  family: 20.0,
-  mac1: 9.0,
+  mobile: 6.00,
+  family: 20.00,
+  mac1: 9.00,
   mac3: 14.99
 };
 
 function formatMoney(value) {
   const num = Number(value);
-
-  if (Number.isInteger(num)) {
-    return `${num} zł`;
-  }
-
+  if (Number.isInteger(num)) return `${num} zł`;
   return `${num.toFixed(2).replace(".", ",")} zł`;
 }
 
@@ -60,7 +56,7 @@ function calculate() {
 
   let symmetric = 0;
   if (state.symmetric) {
-    symmetric = state.status === "Obecny" && state.renewalDiscount ? 5 : 10;
+    symmetric = (state.status === "Obecny" && state.renewalDiscount) ? 5 : 10;
   }
 
   const phone = phonePrices[state.phone] || 0;
@@ -93,36 +89,35 @@ function calculate() {
 
 function normalizeState() {
   const renewalAllowed = state.symmetric && state.status === "Obecny";
-
   if (!renewalAllowed) {
     state.renewalDiscount = false;
   }
 }
 
-function updateSelectCards() {
-  document.querySelectorAll(".select-card[data-group]").forEach((button) => {
-    const group = button.dataset.group;
-    let value = button.dataset.value;
+function updateChoiceCards() {
+  document.querySelectorAll(".choice-card[data-group]").forEach((btn) => {
+    const group = btn.dataset.group;
+    let value = btn.dataset.value;
 
     if (group === "commitment") {
       value = Number(value);
     }
 
-    button.classList.toggle("active", state[group] === value);
+    btn.classList.toggle("active", state[group] === value);
   });
 }
 
 function updateToggleCards() {
-  document.querySelectorAll(".toggle-card[data-toggle]").forEach((button) => {
-    const key = button.dataset.toggle;
-    button.classList.toggle("active", Boolean(state[key]));
+  document.querySelectorAll(".toggle-card[data-toggle]").forEach((btn) => {
+    const key = btn.dataset.toggle;
+    btn.classList.toggle("active", !!state[key]);
   });
 
-  const renewalButton = document.getElementById("renewal-discount-btn");
+  const renewalBtn = document.getElementById("renewal-discount-btn");
   const renewalNote = document.getElementById("renewal-note");
   const renewalAllowed = state.symmetric && state.status === "Obecny";
 
-  renewalButton.classList.toggle("disabled", !renewalAllowed);
+  renewalBtn.classList.toggle("disabled", !renewalAllowed);
 
   renewalNote.textContent = renewalAllowed
     ? "Rabat odnowieniowy jest dostępny dla tej konfiguracji."
@@ -131,25 +126,19 @@ function updateToggleCards() {
 
 function updateSummary(calc) {
   document.getElementById("detail-commitment").textContent = `${state.commitment} miesięcy`;
-  document.getElementById("detail-building").textContent =
-    state.building === "SFH" ? "Domek (SFH)" : "Blok (MFH)";
-  document.getElementById("detail-status").textContent =
-    state.status === "Nowy" ? "Nowy klient" : "Obecny klient";
+  document.getElementById("detail-building").textContent = state.building === "SFH" ? "Domek (SFH)" : "Blok (MFH)";
+  document.getElementById("detail-status").textContent = state.status === "Nowy" ? "Nowy klient" : "Obecny klient";
   document.getElementById("detail-tariff").textContent = state.tariff;
 
   document.getElementById("monthly-total").textContent = formatMoney(calc.monthly);
   document.getElementById("one-time-total").textContent = formatMoney(calc.oneTime);
 
   document.getElementById("line-base").textContent = formatMoney(calc.base);
-  document.getElementById("line-consents").textContent =
-    calc.consents > 0 ? `+ ${formatMoney(calc.consents)}` : "0 zł";
-  document.getElementById("line-phone").textContent =
-    calc.phone > 0 ? `+ ${formatMoney(calc.phone)}` : "0 zł";
-  document.getElementById("line-addons").textContent =
-    calc.addons > 0 ? `+ ${formatMoney(calc.addons)}` : "0 zł";
+  document.getElementById("line-consents").textContent = formatMoney(calc.consents);
+  document.getElementById("line-phone").textContent = formatMoney(calc.phone);
+  document.getElementById("line-addons").textContent = formatMoney(calc.addons);
   document.getElementById("line-install").textContent = formatMoney(calc.install);
-  document.getElementById("line-activation").textContent =
-    calc.activation > 0 ? `+ ${formatMoney(calc.activation)}` : "0 zł";
+  document.getElementById("line-activation").textContent = formatMoney(calc.activation);
 }
 
 function buildBreakdown(calc) {
@@ -163,7 +152,7 @@ function buildBreakdown(calc) {
   `);
 
   rows.push(`
-    <div class="break-row ${calc.consents > 0 ? "break-red" : "break-green"}">
+    <div class="break-row ${calc.consents > 0 ? "text-red-600" : "text-emerald-600"}">
       <span>2. Zgody / brak zgód</span>
       <strong>${calc.consents > 0 ? "+ " + formatMoney(calc.consents) : "0 zł"}</strong>
     </div>
@@ -171,7 +160,7 @@ function buildBreakdown(calc) {
 
   if (calc.symmetric > 0) {
     rows.push(`
-      <div class="break-row break-indigo">
+      <div class="break-row text-indigo-600">
         <span>3. Łącze symetryczne</span>
         <strong>+ ${formatMoney(calc.symmetric)}</strong>
       </div>
@@ -180,7 +169,7 @@ function buildBreakdown(calc) {
 
   if (calc.phone > 0) {
     rows.push(`
-      <div class="break-row break-cyan">
+      <div class="break-row text-cyan-700">
         <span>4. Telefon (${state.phone})</span>
         <strong>+ ${formatMoney(calc.phone)}</strong>
       </div>
@@ -189,7 +178,7 @@ function buildBreakdown(calc) {
 
   if (calc.security > 0) {
     rows.push(`
-      <div class="break-row break-pink">
+      <div class="break-row text-fuchsia-700">
         <span>5. Bezpieczeństwo (${state.security})</span>
         <strong>+ ${formatMoney(calc.security)}</strong>
       </div>
@@ -198,7 +187,7 @@ function buildBreakdown(calc) {
 
   if (calc.internetPlus > 0) {
     rows.push(`
-      <div class="break-row break-green">
+      <div class="break-row text-emerald-700">
         <span>6. Internet+</span>
         <strong>+ ${formatMoney(calc.internetPlus)}</strong>
       </div>
@@ -207,7 +196,7 @@ function buildBreakdown(calc) {
 
   if (calc.wifiPremium > 0) {
     rows.push(`
-      <div class="break-row break-orange">
+      <div class="break-row text-orange-600">
         <span>7. WiFi Premium</span>
         <strong>+ ${formatMoney(calc.wifiPremium)}</strong>
       </div>
@@ -215,7 +204,7 @@ function buildBreakdown(calc) {
   }
 
   rows.push(`
-    <div class="break-row break-bold">
+    <div class="break-row" style="font-weight:800;">
       <span>Razem miesięcznie</span>
       <strong>${formatMoney(calc.monthly)}</strong>
     </div>
@@ -230,7 +219,7 @@ function buildBreakdown(calc) {
 
   if (calc.activation > 0) {
     rows.push(`
-      <div class="break-row break-orange">
+      <div class="break-row text-orange-600">
         <span>9. Aktywacja dodatków</span>
         <strong>+ ${formatMoney(calc.activation)}</strong>
       </div>
@@ -238,7 +227,7 @@ function buildBreakdown(calc) {
   }
 
   rows.push(`
-    <div class="break-row break-bold">
+    <div class="break-row" style="font-weight:800;">
       <span>Razem jednorazowo</span>
       <strong>${formatMoney(calc.oneTime)}</strong>
     </div>
@@ -250,48 +239,37 @@ function buildBreakdown(calc) {
 function render() {
   normalizeState();
   const calc = calculate();
-
-  updateSelectCards();
+  updateChoiceCards();
   updateToggleCards();
   updateSummary(calc);
   buildBreakdown(calc);
 }
 
-function bindSelectCards() {
-  document.querySelectorAll(".select-card[data-group]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const group = button.dataset.group;
-      let value = button.dataset.value;
+document.querySelectorAll(".choice-card[data-group]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const group = btn.dataset.group;
+    let value = btn.dataset.value;
 
-      if (group === "commitment") {
-        value = Number(value);
-      }
+    if (group === "commitment") {
+      value = Number(value);
+    }
 
-      state[group] = value;
-      render();
-    });
+    state[group] = value;
+    render();
   });
-}
+});
 
-function bindToggleCards() {
-  document.querySelectorAll(".toggle-card[data-toggle]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const key = button.dataset.toggle;
+document.querySelectorAll(".toggle-card[data-toggle]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const key = btn.dataset.toggle;
 
-      if (key === "renewalDiscount" && !(state.symmetric && state.status === "Obecny")) {
-        return;
-      }
+    if (key === "renewalDiscount" && !(state.symmetric && state.status === "Obecny")) {
+      return;
+    }
 
-      state[key] = !state[key];
-      render();
-    });
+    state[key] = !state[key];
+    render();
   });
-}
+});
 
-function initCalculator() {
-  bindSelectCards();
-  bindToggleCards();
-  render();
-}
-
-initCalculator();
+render();
