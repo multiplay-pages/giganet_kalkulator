@@ -182,100 +182,6 @@ function updateSummary(calc) {
     calc.activation > 0 ? `+ ${formatMoney(calc.activation)}` : "0 zł";
 }
 
-function buildBreakdown(calc) {
-  const rows = [];
-
-  rows.push(`
-    <div class="break-row">
-      <span>1. Cena bazowa</span>
-      <strong>${formatMoney(calc.base)}</strong>
-    </div>
-  `);
-
-  rows.push(`
-    <div class="break-row ${calc.consents > 0 ? "break-red" : "break-green"}">
-      <span>2. Zgody / brak zgód</span>
-      <strong>${calc.consents > 0 ? "+ " + formatMoney(calc.consents) : "0 zł"}</strong>
-    </div>
-  `);
-
-  if (calc.symmetric > 0) {
-    rows.push(`
-      <div class="break-row break-indigo">
-        <span>3. Łącze symetryczne</span>
-        <strong>+ ${formatMoney(calc.symmetric)}</strong>
-      </div>
-    `);
-  }
-
-  if (calc.phone > 0) {
-    rows.push(`
-      <div class="break-row break-cyan">
-        <span>4. Telefon (${state.phone})</span>
-        <strong>+ ${formatMoney(calc.phone)}</strong>
-      </div>
-    `);
-  }
-
-  if (calc.security > 0) {
-    rows.push(`
-      <div class="break-row break-pink">
-        <span>5. Bezpieczeństwo (${state.security})</span>
-        <strong>+ ${formatMoney(calc.security)}</strong>
-      </div>
-    `);
-  }
-
-  if (calc.internetPlus > 0) {
-    rows.push(`
-      <div class="break-row break-green">
-        <span>6. Internet+</span>
-        <strong>+ ${formatMoney(calc.internetPlus)}</strong>
-      </div>
-    `);
-  }
-
-  if (calc.wifiPremium > 0) {
-    rows.push(`
-      <div class="break-row break-orange">
-        <span>7. WiFi Premium</span>
-        <strong>+ ${formatMoney(calc.wifiPremium)}</strong>
-      </div>
-    `);
-  }
-
-  rows.push(`
-    <div class="break-row break-bold">
-      <span>Razem miesięcznie</span>
-      <strong>${formatMoney(calc.monthly)}</strong>
-    </div>
-  `);
-
-  rows.push(`
-    <div class="break-row">
-      <span>8. Instalacja</span>
-      <strong>${formatMoney(calc.install)}</strong>
-    </div>
-  `);
-
-  if (calc.activation > 0) {
-    rows.push(`
-      <div class="break-row break-orange">
-        <span>9. Aktywacja dodatków</span>
-        <strong>+ ${formatMoney(calc.activation)}</strong>
-      </div>
-    `);
-  }
-
-  rows.push(`
-    <div class="break-row break-bold">
-      <span>Razem jednorazowo</span>
-      <strong>${formatMoney(calc.oneTime)}</strong>
-    </div>
-  `);
-
-  document.getElementById("breakdown").innerHTML = rows.join("");
-}
 
 function render() {
   normalizeState();
@@ -284,7 +190,6 @@ function render() {
   updateSelectCards();
   updateToggleCards();
   updateSummary(calc);
-  buildBreakdown(calc);
 }
 
 function bindSelectCards() {
