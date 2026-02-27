@@ -92,7 +92,16 @@ function calculate() {
 }
 
 function normalizeState() {
-  const renewalAllowed = state.symmetric && state.status === "Obecny";
+  const symmetricLocked = state.tariff === "2000/2000";
+
+  if (symmetricLocked) {
+    state.symmetric = false;
+  }
+
+  const renewalAllowed =
+    !symmetricLocked &&
+    state.symmetric &&
+    state.status === "Obecny";
 
   if (!renewalAllowed) {
     state.renewalDiscount = false;
@@ -118,15 +127,36 @@ function updateToggleCards() {
     button.classList.toggle("active", Boolean(state[key]));
   });
 
+  const symmetricButton = document.querySelector('.toggle-card[data-toggle="symmetric"]');
   const renewalButton = document.getElementById("renewal-discount-btn");
   const renewalNote = document.getElementById("renewal-note");
-  const renewalAllowed = state.symmetric && state.status === "Obecny";
+
+  const symmetricLocked = state.tariff === "2000/2000";
+  const renewalAllowed =
+    !symmetricLocked &&
+    state.symmetric &&
+    state.status === "Obecny";
+
+  if (symmetricButton) {
+    symmetricButton.classList.toggle("disabled", symmetricLocked);
+
+    if (symmetricLocked) {
+      symmetricButton.classList.remove("active");
+    }
+  }
 
   renewalButton.classList.toggle("disabled", !renewalAllowed);
 
-  renewalNote.textContent = renewalAllowed
-    ? "Rabat odnowieniowy jest dostępny dla tej konfiguracji."
-    : "Rabat odnowieniowy działa tylko dla obecnego klienta przy aktywnym łączu symetrycznym.";
+  if (symmetricLocked) {
+    renewalNote.textContent =
+      "Taryfa 2000/2000 jest już łączem symetrycznym, więc dodatkowa opcja „Łącze symetryczne” jest niedostępna.";
+  } else if (renewalAllowed) {
+    renewalNote.textContent =
+      "Rabat odnowieniowy jest dostępny dla tej konfiguracji.";
+  } else {
+    renewalNote.textContent =
+      "Rabat odnowieniowy działa tylko dla obecnego klienta przy aktywnym łączu symetrycznym.";
+  }
 }
 
 function updateSummary(calc) {
@@ -277,6 +307,10 @@ function bindToggleCards() {
   document.querySelectorAll(".toggle-card[data-toggle]").forEach((button) => {
     button.addEventListener("click", () => {
       const key = button.dataset.toggle;
+
+      if (key === "symmetric" && state.tariff === "2000/2000") {
+        return;
+      }
 
       if (key === "renewalDiscount" && !(state.symmetric && state.status === "Obecny")) {
         return;
