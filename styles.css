@@ -114,7 +114,7 @@ button {
   line-height: 1.5;
 }
 
-..hero-brand {
+.hero-brand {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -144,7 +144,6 @@ button {
   height: auto;
   object-fit: contain;
   filter: brightness(0) invert(1);
-}
 }
 
 .hero-card {
