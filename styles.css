@@ -365,6 +365,7 @@ button {
 /* SUMMARY */
 .right-column {
   position: relative;
+  align-self: start;
 }
 
 .summary-panel {

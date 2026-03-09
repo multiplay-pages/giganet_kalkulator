@@ -1,0 +1,42 @@
+{
+  "basePrices": {
+    "12": {
+      "SFH": { "600/100": 90, "800/200": 95, "1000/300": 105, "2000/2000": 165 },
+      "MFH": { "600/100": 70, "800/200": 75, "1000/300": 85, "2000/2000": 145 }
+    },
+    "24": {
+      "SFH": { "600/100": 85, "800/200": 90, "1000/300": 100, "2000/2000": 160 },
+      "MFH": { "600/100": 65, "800/200": 70, "1000/300": 80, "2000/2000": 140 }
+    }
+  },
+  "phonePrices": {
+    "off": 0,
+    "UE60": 9.99,
+    "UE300": 14.99,
+    "NoLimit": 19.99
+  },
+  "securityPrices": {
+    "off": 0,
+    "is1": 9,
+    "is3": 14.99,
+    "mobile": 6,
+    "family": 20,
+    "mac1": 9,
+    "mac3": 14.99
+  },
+  "consentPenalties": {
+    "efaktura": 10,
+    "marketing": 5
+  },
+  "addonPrices": {
+    "symmetricDefault": 10,
+    "symmetricRenewal": 5,
+    "internetPlus": 10,
+    "wifiPremiumMonthly": 10,
+    "wifiPremiumActivation": 89
+  },
+  "installationPrices": {
+    "newCustomer": 249,
+    "existingCustomer": 0
+  }
+}

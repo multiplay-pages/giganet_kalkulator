@@ -13,33 +13,83 @@ const state = {
   security: "off"
 };
 
-const basePrices = {
-  12: {
-    SFH: { "600/100": 90, "800/200": 95, "1000/300": 105, "2000/2000": 165 },
-    MFH: { "600/100": 70, "800/200": 75, "1000/300": 85, "2000/2000": 145 }
+const fallbackPriceConfig = {
+  basePrices: {
+    12: {
+      SFH: { "600/100": 90, "800/200": 95, "1000/300": 105, "2000/2000": 165 },
+      MFH: { "600/100": 70, "800/200": 75, "1000/300": 85, "2000/2000": 145 }
+    },
+    24: {
+      SFH: { "600/100": 85, "800/200": 90, "1000/300": 100, "2000/2000": 160 },
+      MFH: { "600/100": 65, "800/200": 70, "1000/300": 80, "2000/2000": 140 }
+    }
   },
-  24: {
-    SFH: { "600/100": 85, "800/200": 90, "1000/300": 100, "2000/2000": 160 },
-    MFH: { "600/100": 65, "800/200": 70, "1000/300": 80, "2000/2000": 140 }
+  phonePrices: {
+    off: 0,
+    UE60: 9.99,
+    UE300: 14.99,
+    NoLimit: 19.99
+  },
+  securityPrices: {
+    off: 0,
+    is1: 9,
+    is3: 14.99,
+    mobile: 6,
+    family: 20,
+    mac1: 9,
+    mac3: 14.99
+  },
+  consentPenalties: {
+    efaktura: 10,
+    marketing: 5
+  },
+  addonPrices: {
+    symmetricDefault: 10,
+    symmetricRenewal: 5,
+    internetPlus: 10,
+    wifiPremiumMonthly: 10,
+    wifiPremiumActivation: 89
+  },
+  installationPrices: {
+    newCustomer: 249,
+    existingCustomer: 0
   }
 };
 
-const phonePrices = {
-  off: 0,
-  UE60: 9.99,
-  UE300: 14.99,
-  NoLimit: 19.99
-};
+let priceConfig = fallbackPriceConfig;
 
-const securityPrices = {
-  off: 0,
-  is1: 9.0,
-  is3: 14.99,
-  mobile: 6.0,
-  family: 20.0,
-  mac1: 9.0,
-  mac3: 14.99
-};
+function isValidPriceConfig(config) {
+  return Boolean(
+    config &&
+      config.basePrices &&
+      config.phonePrices &&
+      config.securityPrices &&
+      config.consentPenalties &&
+      config.addonPrices &&
+      config.installationPrices
+  );
+}
+
+async function loadPriceConfig() {
+  try {
+    const response = await fetch("./prices.json", { cache: "no-store" });
+
+    if (!response.ok) {
+      throw new Error(`Nie udało się pobrać prices.json (HTTP ${response.status})`);
+    }
+
+    const data = await response.json();
+
+    if (!isValidPriceConfig(data)) {
+      throw new Error("prices.json ma niepoprawną strukturę");
+    }
+
+    priceConfig = data;
+  } catch (error) {
+    console.error("Używam danych awaryjnych cen.", error);
+    priceConfig = fallbackPriceConfig;
+  }
+}
 
 function formatMoney(value) {
   const num = Number(value);
@@ -52,27 +102,33 @@ function formatMoney(value) {
 }
 
 function calculate() {
-  const base = basePrices[state.commitment][state.building][state.tariff];
+  const base = priceConfig.basePrices[state.commitment][state.building][state.tariff];
 
   const consents =
-    (state.efaktura ? 0 : 10) +
-    (state.marketing ? 0 : 5);
+    (state.efaktura ? 0 : priceConfig.consentPenalties.efaktura) +
+    (state.marketing ? 0 : priceConfig.consentPenalties.marketing);
 
   let symmetric = 0;
   if (state.symmetric) {
-    symmetric = state.status === "Obecny" && state.renewalDiscount ? 5 : 10;
+    symmetric =
+      state.status === "Obecny" && state.renewalDiscount
+        ? priceConfig.addonPrices.symmetricRenewal
+        : priceConfig.addonPrices.symmetricDefault;
   }
 
-  const phone = phonePrices[state.phone] || 0;
-  const security = securityPrices[state.security] || 0;
-  const internetPlus = state.internetPlus ? 10 : 0;
-  const wifiPremium = state.wifiPremium ? 20 : 0;
+  const phone = priceConfig.phonePrices[state.phone] || 0;
+  const security = priceConfig.securityPrices[state.security] || 0;
+  const internetPlus = state.internetPlus ? priceConfig.addonPrices.internetPlus : 0;
+  const wifiPremium = state.wifiPremium ? priceConfig.addonPrices.wifiPremiumMonthly : 0;
 
   const addons = symmetric + security + internetPlus + wifiPremium;
   const monthly = base + consents + phone + addons;
 
-  const install = state.status === "Nowy" ? 249 : 0;
-  const activation = state.wifiPremium ? 89 : 0;
+  const install =
+    state.status === "Nowy"
+      ? priceConfig.installationPrices.newCustomer
+      : priceConfig.installationPrices.existingCustomer;
+  const activation = state.wifiPremium ? priceConfig.addonPrices.wifiPremiumActivation : 0;
   const oneTime = install + activation;
 
   return {
@@ -182,7 +238,6 @@ function updateSummary(calc) {
     calc.activation > 0 ? `+ ${formatMoney(calc.activation)}` : "0 zł";
 }
 
-
 function render() {
   normalizeState();
   const calc = calculate();
@@ -227,7 +282,8 @@ function bindToggleCards() {
   });
 }
 
-function initCalculator() {
+async function initCalculator() {
+  await loadPriceConfig();
   bindSelectCards();
   bindToggleCards();
   render();
