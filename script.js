@@ -373,13 +373,13 @@ function updatePromoSliders(calc) {
   promoWifiGroup.style.display = state.wifiPremium ? "block" : "none";
   promoWifiSlider.disabled = !state.wifiPremium;
 
-  const efektywneWifi = Math.max(0, Math.min(miesWifi, okres - mies1zl));
-  const wifiMonthlyTotal = Number(calc.wifiPremium) || 0;
+  const wifiMonthlyTotal = Math.max(0, Number(calc.wifiPremium) || 0);
+  const monthlyWithoutWifi = Math.max(0, (Number(calc.monthly) || 0) - wifiMonthlyTotal);
 
-  const saving1zl = mies1zl * Math.max(0, calc.monthly - 1);
-  const savingWifi = efektywneWifi * Math.max(0, wifiMonthlyTotal - 1);
+  const saving1zl = mies1zl * Math.max(0, monthlyWithoutWifi - 1);
+  const savingWifi = miesWifi * Math.max(0, wifiMonthlyTotal - 1);
   const totalPromoSaving = saving1zl + savingWifi;
-  const usredniona = Math.max(0, calc.monthly - totalPromoSaving / okres);
+  const usredniona = Math.max(0, (Number(calc.monthly) || 0) - totalPromoSaving / okres);
 
   promo1zlValue.textContent = `${mies1zl} mies.`;
   promoWifiValue.textContent = `${miesWifi} mies.`;
