@@ -10,7 +10,9 @@ const state = {
   renewalDiscount: false,
   internetPlus: false,
   wifiPremium: false,
-  security: "off"
+  security: "off",
+  promoMonths1zl: 0,
+  promoWifiMonths: 0
 };
 
 const fallbackPriceConfig = {
@@ -93,11 +95,6 @@ async function loadPriceConfig() {
 
 function formatMoney(value) {
   const num = Number(value);
-
-  if (Number.isInteger(num)) {
-    return `${num} zł`;
-  }
-
   return `${num.toFixed(2).replace(".", ",")} zł`;
 }
 
@@ -161,6 +158,16 @@ function normalizeState() {
 
   if (!renewalAllowed) {
     state.renewalDiscount = false;
+  }
+
+  if (state.promoMonths1zl > state.commitment) {
+    state.promoMonths1zl = 0;
+  }
+  if (state.promoWifiMonths > state.commitment) {
+    state.promoWifiMonths = 0;
+  }
+  if (!state.wifiPremium) {
+    state.promoWifiMonths = 0;
   }
 }
 
@@ -228,14 +235,55 @@ function updateSummary(calc) {
 
   document.getElementById("line-base").textContent = formatMoney(calc.base);
   document.getElementById("line-consents").textContent =
-    calc.consents > 0 ? `+ ${formatMoney(calc.consents)}` : "0 zł";
+    calc.consents > 0 ? `+ ${formatMoney(calc.consents)}`  : formatMoney(0);
   document.getElementById("line-phone").textContent =
-    calc.phone > 0 ? `+ ${formatMoney(calc.phone)}` : "0 zł";
+    calc.phone > 0 ? `+ ${formatMoney(calc.phone)}`  : formatMoney(0);
   document.getElementById("line-addons").textContent =
-    calc.addons > 0 ? `+ ${formatMoney(calc.addons)}` : "0 zł";
+    calc.addons > 0 ? `+ ${formatMoney(calc.addons)}`  : formatMoney(0);
   document.getElementById("line-install").textContent = formatMoney(calc.install);
   document.getElementById("line-activation").textContent =
-    calc.activation > 0 ? `+ ${formatMoney(calc.activation)}` : "0 zł";
+    calc.activation > 0 ? `+ ${formatMoney(calc.activation)}`  : formatMoney(0);
+}
+
+
+function updatePromoSliders(calc) {
+  const promo1zlSlider = document.getElementById("promo1zl-slider");
+  const promoWifiSlider = document.getElementById("promoWifi-slider");
+  const promoWifiGroup = document.getElementById("promo-wifi-group");
+
+  const okres = state.commitment;
+  const mies1zl = state.promoMonths1zl;
+  const miesWifi = state.promoWifiMonths;
+
+  promo1zlSlider.max = okres;
+  promoWifiSlider.max = okres;
+  promo1zlSlider.value = mies1zl;
+  promoWifiSlider.value = miesWifi;
+
+  document.getElementById("promo1zl-value").textContent = `${mies1zl} mies.`;
+  document.getElementById("promoWifi-value").textContent = `${miesWifi} mies.`;
+
+  promoWifiGroup.style.display = state.wifiPremium ? "block" : "none";
+
+  const kosztPromo = mies1zl * (1 + calc.consents);
+  const kosztRegularny = (okres - mies1zl) * calc.monthly;
+
+  const efektywneWifi = Math.max(0, Math.min(miesWifi, okres - mies1zl));
+  const oszczednoscWifi = efektywneWifi * 9;
+
+  const kosztCalkowity = kosztPromo + kosztRegularny - oszczednoscWifi;
+  const usredniona = kosztCalkowity / okres;
+
+  const saving1zl = mies1zl * (calc.monthly - (1 + calc.consents));
+  const savingWifi = efektywneWifi * 9;
+
+  const pelnyKosztBezPromocji = okres * calc.monthly;
+  const totalPromoSaving = pelnyKosztBezPromocji - kosztCalkowity;
+
+  document.getElementById("promo1zl-saving").textContent = `Oszczędność: ${formatMoney(saving1zl)}`;
+  document.getElementById("promoWifi-saving").textContent = `Oszczędność: ${formatMoney(savingWifi)}`;
+  document.getElementById("avg-monthly").textContent = `${formatMoney(usredniona)} / mies.`;
+  document.getElementById("total-promo-saving").textContent = formatMoney(totalPromoSaving);
 }
 
 function render() {
@@ -245,6 +293,7 @@ function render() {
   updateSelectCards();
   updateToggleCards();
   updateSummary(calc);
+  updatePromoSliders(calc);
 }
 
 function bindSelectCards() {
@@ -258,6 +307,12 @@ function bindSelectCards() {
       }
 
       state[group] = value;
+
+      if (["commitment", "building", "status", "tariff"].includes(group)) {
+        state.promoMonths1zl = 0;
+        state.promoWifiMonths = 0;
+      }
+
       render();
     });
   });
@@ -282,10 +337,27 @@ function bindToggleCards() {
   });
 }
 
+
+function bindPromoSliders() {
+  const promo1zlSlider = document.getElementById("promo1zl-slider");
+  const promoWifiSlider = document.getElementById("promoWifi-slider");
+
+  promo1zlSlider.addEventListener("input", () => {
+    state.promoMonths1zl = Number(promo1zlSlider.value);
+    render();
+  });
+
+  promoWifiSlider.addEventListener("input", () => {
+    state.promoWifiMonths = Number(promoWifiSlider.value);
+    render();
+  });
+}
+
 async function initCalculator() {
   await loadPriceConfig();
   bindSelectCards();
   bindToggleCards();
+  bindPromoSliders();
   render();
 }
 
