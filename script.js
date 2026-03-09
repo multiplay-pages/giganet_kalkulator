@@ -332,8 +332,24 @@ function updatePromoSliders(calc) {
   const promo1zlSlider = document.getElementById("promo1zl-slider");
   const promoWifiSlider = document.getElementById("promoWifi-slider");
   const promoWifiGroup = document.getElementById("promo-wifi-group");
+  const promo1zlValue = document.getElementById("promo1zl-value");
+  const promoWifiValue = document.getElementById("promoWifi-value");
+  const promo1zlSaving = document.getElementById("promo1zl-saving");
+  const promoWifiSaving = document.getElementById("promoWifi-saving");
+  const avgMonthly = document.getElementById("avg-monthly");
+  const totalPromoSavingEl = document.getElementById("total-promo-saving");
 
-  if (!promo1zlSlider || !promoWifiSlider || !promoWifiGroup) {
+  if (
+    !promo1zlSlider ||
+    !promoWifiSlider ||
+    !promoWifiGroup ||
+    !promo1zlValue ||
+    !promoWifiValue ||
+    !promo1zlSaving ||
+    !promoWifiSaving ||
+    !avgMonthly ||
+    !totalPromoSavingEl
+  ) {
     return;
   }
 
@@ -357,20 +373,20 @@ function updatePromoSliders(calc) {
   promoWifiGroup.style.display = state.wifiPremium ? "block" : "none";
   promoWifiSlider.disabled = !state.wifiPremium;
 
-  const efektywneWifi = Math.max(0, Math.min(miesWifi, okres - mies1zl));
-  const wifiMonthlyTotal = Number(calc.wifiPremium) || 0;
+  const wifiMonthlyTotal = Math.max(0, Number(calc.wifiPremium) || 0);
+  const monthlyWithoutWifi = Math.max(0, (Number(calc.monthly) || 0) - wifiMonthlyTotal);
 
-  const saving1zl = mies1zl * Math.max(0, calc.monthly - 1);
-  const savingWifi = efektywneWifi * Math.max(0, wifiMonthlyTotal - 1);
+  const saving1zl = mies1zl * Math.max(0, monthlyWithoutWifi - 1);
+  const savingWifi = miesWifi * Math.max(0, wifiMonthlyTotal - 1);
   const totalPromoSaving = saving1zl + savingWifi;
-  const usredniona = Math.max(0, calc.monthly - totalPromoSaving / okres);
+  const usredniona = Math.max(0, (Number(calc.monthly) || 0) - totalPromoSaving / okres);
 
-  document.getElementById("promo1zl-value").textContent = `${mies1zl} mies.`;
-  document.getElementById("promoWifi-value").textContent = `${miesWifi} mies.`;
-  document.getElementById("promo1zl-saving").textContent = `Oszczędność: ${formatMoney(saving1zl)}`;
-  document.getElementById("promoWifi-saving").textContent = `Oszczędność: ${formatMoney(savingWifi)}`;
-  document.getElementById("avg-monthly").textContent = `${formatMoney(usredniona)} / mies.`;
-  document.getElementById("total-promo-saving").textContent = formatMoney(totalPromoSaving);
+  promo1zlValue.textContent = `${mies1zl} mies.`;
+  promoWifiValue.textContent = `${miesWifi} mies.`;
+  promo1zlSaving.textContent = `Oszczędność: ${formatMoney(saving1zl)}`;
+  promoWifiSaving.textContent = `Oszczędność: ${formatMoney(savingWifi)}`;
+  avgMonthly.textContent = `${formatMoney(usredniona)} / mies.`;
+  totalPromoSavingEl.textContent = formatMoney(totalPromoSaving);
 }
 
 function render() {
