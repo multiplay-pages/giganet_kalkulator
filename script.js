@@ -142,7 +142,8 @@ function calculate() {
   const monthly = base + consents + phone + addons;
 
   const install =
-    state.status === "Nowy"
+    state.status === "Nowy"const wifiMonthlyPerUnit = getAddonPrice("wifi_monthly_per_unit", "wifiPremiumMonthly");
+
       ? priceConfig.installationPrices.newCustomer
       : priceConfig.installationPrices.existingCustomer;
   const activation = state.wifiCount > 0 ? state.wifiCount * wifiActivationPerUnit : 0;
@@ -430,15 +431,10 @@ function bindToggleCards() {
 function bindWifiPremiumControls() {
   const wifiCountSlider = document.getElementById("wifi-count-slider");
 
-  if (!wifiCountSlider) {
-    return;
-  }
-
   wifiCountSlider.addEventListener("input", () => {
-    const previousCount = state.wifiCount;
     state.wifiCount = Number(wifiCountSlider.value);
 
-    if (state.wifiCount === 0 || previousCount === 0) {
+    if (state.wifiCount === 0) {
       state.wifiInstallType = "self";
     }
 
