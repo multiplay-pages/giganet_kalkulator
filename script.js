@@ -328,6 +328,60 @@ function updateWifiPremiumControls() {
   });
 }
 
+function buildPromoPeriods(monthlyWithoutWifi, wifiMonthlyTotal, commitment, promoMonths1zl, promoWifiMonths, wifiPremiumActive) {
+  const rows = [];
+
+  for (let month = 1; month <= commitment; month += 1) {
+    const packagePart = month <= promoMonths1zl ? 1 : monthlyWithoutWifi;
+    let wifiPart = 0;
+
+    if (wifiPremiumActive) {
+      wifiPart = month <= promoWifiMonths ? 1 : wifiMonthlyTotal;
+    }
+
+    rows.push(Number((packagePart + wifiPart).toFixed(2)));
+  }
+
+  return rows;
+}
+
+function groupPromoPeriods(monthlyRows) {
+  if (monthlyRows.length === 0) {
+    return [];
+  }
+
+  const groups = [];
+  let start = 1;
+  let current = monthlyRows[0];
+
+  for (let i = 1; i < monthlyRows.length; i += 1) {
+    if (monthlyRows[i] !== current) {
+      groups.push({ start, end: i, price: current });
+      start = i + 1;
+      current = monthlyRows[i];
+    }
+  }
+
+  groups.push({ start, end: monthlyRows.length, price: current });
+  return groups;
+}
+
+function renderPromoPeriods(groups) {
+  const promoPeriodsList = document.getElementById("promo-periods-list");
+
+  if (!promoPeriodsList) {
+    return;
+  }
+
+  promoPeriodsList.innerHTML = groups
+    .map(({ start, end, price }) => {
+      const rangeLabel = start === end ? `${start} mies.` : `${start}–${end} mies.`;
+
+      return `<div class="promo-period-row"><span class="promo-period-range">${rangeLabel}</span><strong class="promo-period-price">${formatMoney(price)} / mies.</strong></div>`;
+    })
+    .join("");
+}
+
 function updatePromoSliders(calc) {
   const promo1zlSlider = document.getElementById("promo1zl-slider");
   const promoWifiSlider = document.getElementById("promoWifi-slider");
@@ -381,12 +435,23 @@ function updatePromoSliders(calc) {
   const totalPromoSaving = saving1zl + savingWifi;
   const usredniona = Math.max(0, (Number(calc.monthly) || 0) - totalPromoSaving / okres);
 
+  const monthlyRows = buildPromoPeriods(
+    monthlyWithoutWifi,
+    wifiMonthlyTotal,
+    okres,
+    mies1zl,
+    miesWifi,
+    state.wifiPremium
+  );
+  const groupedRows = groupPromoPeriods(monthlyRows);
+
   promo1zlValue.textContent = `${mies1zl} mies.`;
   promoWifiValue.textContent = `${miesWifi} mies.`;
   promo1zlSaving.textContent = `Oszczędność: ${formatMoney(saving1zl)}`;
   promoWifiSaving.textContent = `Oszczędność: ${formatMoney(savingWifi)}`;
   avgMonthly.textContent = `${formatMoney(usredniona)} / mies.`;
   totalPromoSavingEl.textContent = formatMoney(totalPromoSaving);
+  renderPromoPeriods(groupedRows);
 }
 
 function render() {

@@ -749,6 +749,32 @@ button {
   color: var(--brand-b);
 }
 
+.promo-periods-card {
+  margin-top: 12px;
+}
+
+.promo-periods-list {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.promo-period-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.promo-period-range {
+  color: var(--muted);
+}
+
+.promo-period-price {
+  font-weight: 800;
+}
+
 .promo-total-saving {
   margin-top: 12px;
   padding: 10px 0;
