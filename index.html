@@ -333,6 +333,56 @@
             <div class="detail-row"><span>Aktywacja dodatków</span><strong id="line-activation">0 zł</strong></div>
           </div>
 
+          <div class="divider"></div>
+
+          <div class="promo-sliders-section">
+            <div class="block-label">Promocje</div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <span class="slider-label">🎁 Miesiące za 1 zł</span>
+                <span class="slider-value" id="promo1zl-value">0 mies.</span>
+              </div>
+              <input
+                type="range"
+                id="promo1zl-slider"
+                min="0"
+                max="24"
+                step="1"
+                value="0"
+                class="promo-slider"
+              />
+              <div class="slider-info" id="promo1zl-saving">Oszczędność: 0 zł</div>
+            </div>
+
+            <div class="slider-group" id="promo-wifi-group" style="display:none;">
+              <div class="slider-header">
+                <span class="slider-label">📶 WiFi Premium za 1 zł</span>
+                <span class="slider-value" id="promoWifi-value">0 mies.</span>
+              </div>
+              <input
+                type="range"
+                id="promoWifi-slider"
+                min="0"
+                max="24"
+                step="1"
+                value="0"
+                class="promo-slider"
+              />
+              <div class="slider-info" id="promoWifi-saving">Oszczędność: 0 zł</div>
+            </div>
+          </div>
+
+          <div class="summary-price-card avg-price-card">
+            <div class="small-label">Uśredniona wartość abonamentu</div>
+            <div id="avg-monthly" class="price-avg">0,00 zł / mies.</div>
+          </div>
+
+          <div class="detail-row promo-total-saving">
+            <span>Łączna oszczędność z promocji</span>
+            <strong id="total-promo-saving" class="break-green">0 zł</strong>
+          </div>
+
           <div class="promo-box">
             <div class="promo-title">Najprostsza decyzja</div>
             <p>
