@@ -10,6 +10,8 @@ const state = {
   renewalDiscount: false,
   internetPlus: false,
   wifiPremium: false,
+  wifiCount: 0,
+  wifiInstallType: "self",
   security: "off",
   promoMonths1zl: 0,
   promoWifiMonths: 0
@@ -49,8 +51,9 @@ const fallbackPriceConfig = {
     symmetricDefault: 10,
     symmetricRenewal: 5,
     internetPlus: 10,
-    wifiPremiumMonthly: 10,
-    wifiPremiumActivation: 89
+    wifi_monthly_per_unit: 10,
+    wifi_activation_per_unit: 89,
+    wifi_technician_trip: 100
   },
   installationPrices: {
     newCustomer: 249,
@@ -116,7 +119,7 @@ function calculate() {
   const phone = priceConfig.phonePrices[state.phone] || 0;
   const security = priceConfig.securityPrices[state.security] || 0;
   const internetPlus = state.internetPlus ? priceConfig.addonPrices.internetPlus : 0;
-  const wifiPremium = state.wifiPremium ? priceConfig.addonPrices.wifiPremiumMonthly : 0;
+  const wifiPremium = state.wifiCount > 0 ? state.wifiCount * priceConfig.addonPrices.wifi_monthly_per_unit : 0;
 
   const addons = symmetric + security + internetPlus + wifiPremium;
   const monthly = base + consents + phone + addons;
@@ -125,8 +128,9 @@ function calculate() {
     state.status === "Nowy"
       ? priceConfig.installationPrices.newCustomer
       : priceConfig.installationPrices.existingCustomer;
-  const activation = state.wifiPremium ? priceConfig.addonPrices.wifiPremiumActivation : 0;
-  const oneTime = install + activation;
+  const activation = state.wifiCount > 0 ? state.wifiCount * priceConfig.addonPrices.wifi_activation_per_unit : 0;
+  const wifiTechnician = state.wifiCount > 0 && state.wifiInstallType === "technician" ? priceConfig.addonPrices.wifi_technician_trip : 0;
+  const oneTime = install + activation + wifiTechnician;
 
   return {
     base,
@@ -140,6 +144,7 @@ function calculate() {
     monthly,
     install,
     activation,
+    wifiTechnician,
     oneTime
   };
 }
@@ -166,6 +171,16 @@ function normalizeState() {
   if (state.promoWifiMonths > state.commitment) {
     state.promoWifiMonths = 0;
   }
+  if (state.wifiCount < 0 || state.wifiCount > 5) {
+    state.wifiCount = 0;
+  }
+
+  state.wifiPremium = state.wifiCount > 0;
+
+  if (state.wifiCount === 0) {
+    state.wifiInstallType = "self";
+  }
+
   if (!state.wifiPremium) {
     state.promoWifiMonths = 0;
   }
@@ -243,6 +258,50 @@ function updateSummary(calc) {
   document.getElementById("line-install").textContent = formatMoney(calc.install);
   document.getElementById("line-activation").textContent =
     calc.activation > 0 ? `+ ${formatMoney(calc.activation)}`  : formatMoney(0);
+
+  const wifiMonthlyRow = document.getElementById("line-wifi-monthly-row");
+  const wifiActivationRow = document.getElementById("line-wifi-activation-row");
+  const wifiTechnicianRow = document.getElementById("line-wifi-technician-row");
+
+  if (state.wifiCount > 0) {
+    wifiMonthlyRow.style.display = "flex";
+    wifiActivationRow.style.display = "flex";
+    document.getElementById("line-wifi-monthly-label").textContent = `WiFi Premium (${state.wifiCount}x)`;
+    document.getElementById("line-wifi-monthly").textContent = `+ ${formatMoney(calc.wifiPremium)}`;
+    document.getElementById("line-wifi-activation-label").textContent = `Aktywacja WiFi Premium (${state.wifiCount}x)`;
+    document.getElementById("line-wifi-activation").textContent = `+ ${formatMoney(calc.activation)}`;
+  } else {
+    wifiMonthlyRow.style.display = "none";
+    wifiActivationRow.style.display = "none";
+  }
+
+  if (calc.wifiTechnician > 0) {
+    wifiTechnicianRow.style.display = "flex";
+    document.getElementById("line-wifi-technician").textContent = `+ ${formatMoney(calc.wifiTechnician)}`;
+  } else {
+    wifiTechnicianRow.style.display = "none";
+  }
+}
+
+
+
+function updateWifiPremiumControls() {
+  const wifiCountSlider = document.getElementById("wifi-count-slider");
+  const wifiCountValue = document.getElementById("wifi-count-value");
+  const wifiInstallWrap = document.getElementById("wifi-install-wrap");
+
+  wifiCountSlider.value = state.wifiCount;
+  wifiCountValue.textContent = `${state.wifiCount} szt.`;
+
+  wifiInstallWrap.classList.toggle("disabled", state.wifiCount === 0);
+
+  document.querySelectorAll(".wifi-install-option").forEach((button) => {
+    const isActive = button.dataset.installType === state.wifiInstallType;
+    button.classList.toggle("active", isActive);
+    button.disabled = state.wifiCount === 0;
+  });
+}
+
 }
 
 
@@ -293,6 +352,7 @@ function render() {
   updateSelectCards();
   updateToggleCards();
   updateSummary(calc);
+  updateWifiPremiumControls();
   updatePromoSliders(calc);
 }
 
@@ -331,12 +391,39 @@ function bindToggleCards() {
         return;
       }
 
+
       state[key] = !state[key];
       render();
     });
   });
 }
 
+
+
+function bindWifiPremiumControls() {
+  const wifiCountSlider = document.getElementById("wifi-count-slider");
+
+  wifiCountSlider.addEventListener("input", () => {
+    state.wifiCount = Number(wifiCountSlider.value);
+
+    if (state.wifiCount === 0) {
+      state.wifiInstallType = "self";
+    }
+
+    render();
+  });
+
+  document.querySelectorAll(".wifi-install-option").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (state.wifiCount === 0) {
+        return;
+      }
+
+      state.wifiInstallType = button.dataset.installType;
+      render();
+    });
+  });
+}
 
 function bindPromoSliders() {
   const promo1zlSlider = document.getElementById("promo1zl-slider");
@@ -357,6 +444,7 @@ async function initCalculator() {
   await loadPriceConfig();
   bindSelectCards();
   bindToggleCards();
+  bindWifiPremiumControls();
   bindPromoSliders();
   render();
 }

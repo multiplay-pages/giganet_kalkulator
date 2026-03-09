@@ -218,12 +218,6 @@
               <div class="card-sub">10 zł / mies.</div>
             </button>
 
-            <button class="toggle-card" data-toggle="wifiPremium">
-              <div class="card-icon">📶</div>
-              <div class="card-title">WiFi Premium</div>
-              <div class="card-sub">10 zł / mies. + 89 zł aktywacja</div>
-            </button>
-
             <button class="toggle-card" data-toggle="renewalDiscount" id="renewal-discount-btn">
               <div class="card-icon">🎯</div>
               <div class="card-title">Rabat odnowieniowy</div>
@@ -233,6 +227,38 @@
 
           <div class="helper-text" id="renewal-note">
             Rabat odnowieniowy działa tylko dla obecnego klienta przy aktywnym łączu symetrycznym.
+          </div>
+        </div>
+
+        <div class="config-block wifi-premium-block">
+          <div class="block-label">WiFi Premium (MESH)</div>
+
+          <div class="wifi-count-wrap">
+            <div class="slider-header">
+              <span class="slider-label">Ilość urządzeń</span>
+              <span class="slider-value" id="wifi-count-value">0 szt.</span>
+            </div>
+            <input
+              type="range"
+              id="wifi-count-slider"
+              min="0"
+              max="5"
+              step="1"
+              value="0"
+              class="promo-slider"
+            />
+          </div>
+
+          <div class="wifi-install-wrap disabled" id="wifi-install-wrap">
+            <div class="small-label">Wariant instalacji</div>
+            <div class="wifi-install-options">
+              <button type="button" class="wifi-install-option active" data-install-type="self">Self Instal</button>
+              <button type="button" class="wifi-install-option" data-install-type="technician">Wyjazd technika (+100 zł jednorazowo)</button>
+            </div>
+          </div>
+
+          <div class="wifi-info-hint">
+            Usługa WiFi Premium zawsze wiąże się z opłatą aktywacyjną. Aktywacja liczona jest za każde urządzenie (Self Instal). Wyjazd technika: +100 zł jednorazowo (niezależnie od liczby urządzeń).
           </div>
         </div>
 
@@ -305,7 +331,7 @@
             </div>
 
             <div class="summary-price-card">
-              <div class="small-label">Jednorazowo</div>
+              <div class="small-label">Start</div>
               <div id="one-time-total" class="price-side">249 zł</div>
             </div>
           </div>
@@ -324,6 +350,7 @@
             <div class="detail-row"><span>Korekty za zgody</span><strong id="line-consents">0 zł</strong></div>
             <div class="detail-row"><span>Telefon</span><strong id="line-phone">0 zł</strong></div>
             <div class="detail-row"><span>Dodatki</span><strong id="line-addons">0 zł</strong></div>
+            <div class="detail-row" id="line-wifi-monthly-row" style="display:none;"><span id="line-wifi-monthly-label">WiFi Premium (0x)</span><strong id="line-wifi-monthly">0 zł</strong></div>
           </div>
 
           <div class="divider"></div>
@@ -331,6 +358,58 @@
           <div class="summary-lines">
             <div class="detail-row"><span>Instalacja</span><strong id="line-install">249 zł</strong></div>
             <div class="detail-row"><span>Aktywacja dodatków</span><strong id="line-activation">0 zł</strong></div>
+            <div class="detail-row" id="line-wifi-activation-row" style="display:none;"><span id="line-wifi-activation-label">Aktywacja WiFi Premium (0x)</span><strong id="line-wifi-activation">0 zł</strong></div>
+            <div class="detail-row" id="line-wifi-technician-row" style="display:none;"><span>Wyjazd technika (WiFi Premium)</span><strong id="line-wifi-technician">0 zł</strong></div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="promo-sliders-section">
+            <div class="block-label">Promocje</div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <span class="slider-label">🎁 Miesiące za 1 zł</span>
+                <span class="slider-value" id="promo1zl-value">0 mies.</span>
+              </div>
+              <input
+                type="range"
+                id="promo1zl-slider"
+                min="0"
+                max="24"
+                step="1"
+                value="0"
+                class="promo-slider"
+              />
+              <div class="slider-info" id="promo1zl-saving">Oszczędność: 0 zł</div>
+            </div>
+
+            <div class="slider-group" id="promo-wifi-group" style="display:none;">
+              <div class="slider-header">
+                <span class="slider-label">📶 WiFi Premium za 1 zł</span>
+                <span class="slider-value" id="promoWifi-value">0 mies.</span>
+              </div>
+              <input
+                type="range"
+                id="promoWifi-slider"
+                min="0"
+                max="24"
+                step="1"
+                value="0"
+                class="promo-slider"
+              />
+              <div class="slider-info" id="promoWifi-saving">Oszczędność: 0 zł</div>
+            </div>
+          </div>
+
+          <div class="summary-price-card avg-price-card">
+            <div class="small-label">Uśredniona wartość abonamentu</div>
+            <div id="avg-monthly" class="price-avg">0,00 zł / mies.</div>
+          </div>
+
+          <div class="detail-row promo-total-saving">
+            <span>Łączna oszczędność z promocji</span>
+            <strong id="total-promo-saving" class="break-green">0 zł</strong>
           </div>
 
           <div class="divider"></div>
@@ -391,11 +470,10 @@
             </p>
           </div>
 
-          <button class="cta-button" type="button">🚀 Zamów tę konfigurację</button>
 
           <div class="tiny-note">
             Brak e-faktury = +10 zł / mies. • Brak zgody marketingowej = +5 zł / mies. •
-            WiFi Premium = 10 zł / mies. + 89 zł aktywacji.
+            WiFi Premium = opłata miesięczna i aktywacja za każde urządzenie • wyjazd technika +100 zł jednorazowo.
           </div>
         </section>
 

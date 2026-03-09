@@ -485,27 +485,6 @@ button {
   color: #475569;
 }
 
-.cta-button {
-  width: 100%;
-  border: 0;
-  border-radius: 22px;
-  padding: 18px 20px;
-  margin-top: 18px;
-  font-size: 16px;
-  font-weight: 900;
-  color: var(--white);
-  cursor: pointer;
-  background:
-    radial-gradient(circle at top left, rgba(255,255,255,0.20), transparent 26%),
-    linear-gradient(135deg, var(--brand-a) 0%, var(--brand-b) 52%, var(--brand-c) 100%);
-  box-shadow: 0 20px 34px rgba(52, 168, 83, 0.28);
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-}
-
-.cta-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 24px 40px rgba(52, 168, 83, 0.34);
-}
 
 .tiny-note {
   margin-top: 14px;
@@ -619,6 +598,68 @@ button {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+
+.wifi-premium-block {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+
+.wifi-count-wrap {
+  margin-top: 10px;
+}
+
+.wifi-install-wrap {
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.wifi-install-wrap.disabled {
+  opacity: 0.6;
+}
+
+.wifi-install-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.wifi-install-option {
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.wifi-install-option.active {
+  border-color: rgba(52, 168, 83, 0.5);
+  background: var(--green-soft);
+  color: var(--brand-b);
+}
+
+.wifi-install-wrap.disabled .wifi-install-option {
+  pointer-events: none;
+}
+
+.wifi-info-hint {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: rgba(248, 250, 252, 0.9);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 /* PROMO SLIDERS */
