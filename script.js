@@ -145,6 +145,7 @@ function calculate() {
     state.status === "Nowy"
       ? priceConfig.installationPrices.newCustomer
       : priceConfig.installationPrices.existingCustomer;
+
   const activation = state.wifiCount > 0 ? state.wifiCount * wifiActivationPerUnit : 0;
   const wifiTechnician =
     state.wifiCount > 0 && state.wifiInstallType === "technician" ? wifiTechnicianTrip : 0;
@@ -174,10 +175,7 @@ function normalizeState() {
     state.symmetric = false;
   }
 
-  const renewalAllowed =
-    !symmetricLocked &&
-    state.symmetric &&
-    state.status === "Obecny";
+  const renewalAllowed = !symmetricLocked && state.symmetric && state.status === "Obecny";
 
   if (!renewalAllowed) {
     state.renewalDiscount = false;
@@ -186,9 +184,11 @@ function normalizeState() {
   if (state.promoMonths1zl > state.commitment) {
     state.promoMonths1zl = 0;
   }
+
   if (state.promoWifiMonths > state.commitment) {
     state.promoWifiMonths = 0;
   }
+
   if (state.wifiCount < 0 || state.wifiCount > 5) {
     state.wifiCount = 0;
   }
@@ -232,10 +232,7 @@ function updateToggleCards() {
   const renewalNote = document.getElementById("renewal-note");
 
   const symmetricLocked = state.tariff === "2000/2000";
-  const renewalAllowed =
-    !symmetricLocked &&
-    state.symmetric &&
-    state.status === "Obecny";
+  const renewalAllowed = !symmetricLocked && state.symmetric && state.status === "Obecny";
 
   if (symmetricButton) {
     symmetricButton.classList.toggle("disabled", symmetricLocked);
@@ -245,17 +242,20 @@ function updateToggleCards() {
     }
   }
 
-  renewalButton.classList.toggle("disabled", !renewalAllowed);
+  if (renewalButton) {
+    renewalButton.classList.toggle("disabled", !renewalAllowed);
+  }
 
-  if (symmetricLocked) {
-    renewalNote.textContent =
-      "Taryfa 2000/2000 jest już łączem symetrycznym, więc dodatkowa opcja „Łącze symetryczne” jest niedostępna.";
-  } else if (renewalAllowed) {
-    renewalNote.textContent =
-      "Rabat odnowieniowy jest dostępny dla tej konfiguracji.";
-  } else {
-    renewalNote.textContent =
-      "Rabat odnowieniowy działa tylko dla obecnego klienta przy aktywnym łączu symetrycznym.";
+  if (renewalNote) {
+    if (symmetricLocked) {
+      renewalNote.textContent =
+        "Taryfa 2000/2000 jest już łączem symetrycznym, więc dodatkowa opcja „Łącze symetryczne” jest niedostępna.";
+    } else if (renewalAllowed) {
+      renewalNote.textContent = "Rabat odnowieniowy jest dostępny dla tej konfiguracji.";
+    } else {
+      renewalNote.textContent =
+        "Rabat odnowieniowy działa tylko dla obecnego klienta przy aktywnym łączu symetrycznym.";
+    }
   }
 }
 
@@ -272,14 +272,14 @@ function updateSummary(calc) {
 
   document.getElementById("line-base").textContent = formatMoney(calc.base);
   document.getElementById("line-consents").textContent =
-    calc.consents > 0 ? `+ ${formatMoney(calc.consents)}`  : formatMoney(0);
+    calc.consents > 0 ? `+ ${formatMoney(calc.consents)}` : formatMoney(0);
   document.getElementById("line-phone").textContent =
-    calc.phone > 0 ? `+ ${formatMoney(calc.phone)}`  : formatMoney(0);
+    calc.phone > 0 ? `+ ${formatMoney(calc.phone)}` : formatMoney(0);
   document.getElementById("line-addons").textContent =
-    calc.addons > 0 ? `+ ${formatMoney(calc.addons)}`  : formatMoney(0);
+    calc.addons > 0 ? `+ ${formatMoney(calc.addons)}` : formatMoney(0);
   document.getElementById("line-install").textContent = formatMoney(calc.install);
   document.getElementById("line-activation").textContent =
-    calc.activation > 0 ? `+ ${formatMoney(calc.activation)}`  : formatMoney(0);
+    calc.activation > 0 ? `+ ${formatMoney(calc.activation)}` : formatMoney(0);
 
   const wifiMonthlyRow = document.getElementById("line-wifi-monthly-row");
   const wifiActivationRow = document.getElementById("line-wifi-activation-row");
@@ -290,7 +290,8 @@ function updateSummary(calc) {
     wifiActivationRow.style.display = "flex";
     document.getElementById("line-wifi-monthly-label").textContent = `WiFi Premium (${state.wifiCount}x)`;
     document.getElementById("line-wifi-monthly").textContent = `+ ${formatMoney(calc.wifiPremium)}`;
-    document.getElementById("line-wifi-activation-label").textContent = `Aktywacja WiFi Premium (${state.wifiCount}x)`;
+    document.getElementById("line-wifi-activation-label").textContent =
+      `Aktywacja WiFi Premium (${state.wifiCount}x)`;
     document.getElementById("line-wifi-activation").textContent = `+ ${formatMoney(calc.activation)}`;
   } else {
     wifiMonthlyRow.style.display = "none";
@@ -304,8 +305,6 @@ function updateSummary(calc) {
     wifiTechnicianRow.style.display = "none";
   }
 }
-
-
 
 function updateWifiPremiumControls() {
   const wifiCountSlider = document.getElementById("wifi-count-slider");
@@ -348,12 +347,12 @@ function updatePromoSliders(calc) {
   promo1zlSlider.min = 0;
   promo1zlSlider.step = 1;
   promo1zlSlider.max = okres;
-  promo1zlSlider.value = Math.max(0, Math.min(mies1zl, okres));
+  promo1zlSlider.value = mies1zl;
 
   promoWifiSlider.min = 0;
   promoWifiSlider.step = 1;
   promoWifiSlider.max = okres;
-  promoWifiSlider.value = Math.max(0, Math.min(miesWifi, okres));
+  promoWifiSlider.value = miesWifi;
 
   promoWifiGroup.style.display = state.wifiPremium ? "block" : "none";
   promoWifiSlider.disabled = !state.wifiPremium;
@@ -361,8 +360,8 @@ function updatePromoSliders(calc) {
   const efektywneWifi = Math.max(0, Math.min(miesWifi, okres - mies1zl));
   const wifiMonthlyTotal = Number(calc.wifiPremium) || 0;
 
-  const saving1zl = mies1zl * Math.max(0, (calc.monthly - 1));
-  const savingWifi = efektywneWifi * Math.max(0, (wifiMonthlyTotal - 1));
+  const saving1zl = mies1zl * Math.max(0, calc.monthly - 1);
+  const savingWifi = efektywneWifi * Math.max(0, wifiMonthlyTotal - 1);
   const totalPromoSaving = saving1zl + savingWifi;
   const usredniona = Math.max(0, calc.monthly - totalPromoSaving / okres);
 
@@ -373,7 +372,6 @@ function updatePromoSliders(calc) {
   document.getElementById("avg-monthly").textContent = `${formatMoney(usredniona)} / mies.`;
   document.getElementById("total-promo-saving").textContent = formatMoney(totalPromoSaving);
 }
-
 
 function render() {
   normalizeState();
@@ -397,7 +395,6 @@ function bindSelectCards() {
       }
 
       state[group] = value;
-
       render();
     });
   });
@@ -416,14 +413,11 @@ function bindToggleCards() {
         return;
       }
 
-
       state[key] = !state[key];
       render();
     });
   });
 }
-
-
 
 function bindWifiPremiumControls() {
   const wifiCountSlider = document.getElementById("wifi-count-slider");
