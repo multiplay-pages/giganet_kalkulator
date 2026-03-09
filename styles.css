@@ -178,6 +178,7 @@ button {
   gap: 28px;
   padding-top: 30px;
   padding-bottom: 36px;
+  align-items: start;
 }
 
 .left-column,
@@ -364,15 +365,15 @@ button {
 
 /* SUMMARY */
 .right-column {
-  position: relative;
+  position: sticky;
+  top: 24px;
   align-self: start;
+  height: fit-content;
 }
 
 .summary-panel {
-  position: sticky;
-  top: 24px;
+  position: static;
 }
-
 .summary-top {
   display: flex;
   align-items: flex-start;
@@ -557,6 +558,12 @@ button {
   .hero-content,
   .main-grid {
     grid-template-columns: 1fr;
+  }
+
+  .right-column {
+    position: static;
+    top: auto;
+    height: auto;
   }
 
   .summary-panel {
