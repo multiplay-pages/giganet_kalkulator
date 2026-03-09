@@ -302,6 +302,9 @@ function updateWifiPremiumControls() {
   });
 }
 
+}
+
+
 function updatePromoSliders(calc) {
   const promo1zlSlider = document.getElementById("promo1zl-slider");
   const promoWifiSlider = document.getElementById("promoWifi-slider");
