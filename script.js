@@ -584,7 +584,7 @@ function updateSummary(baseCalc, timeline, activePromotions) {
     ? 1 + baseCalc.activation + baseCalc.wifiTechnician
     : baseCalc.oneTime;
 
-  document.getElementById("monthly-total").textContent = formatMoney(timeline.rows[0] ?? baseCalc.monthly);
+  document.getElementById("monthly-total").textContent = formatMoney(baseCalc.monthly);
   document.getElementById("one-time-total").textContent = formatMoney(oneTimeFinal);
 
   document.getElementById("line-base").textContent = formatMoney(baseCalc.base);
