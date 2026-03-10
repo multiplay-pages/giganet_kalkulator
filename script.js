@@ -16,7 +16,7 @@ const state = {
   promotionType: "none",
   promotionGiftType: "subscription_discount",
   externalRemainingMonths: 1,
-  bannerCombined: false
+  bannerPromoEnabled: false
 };
 
 const fallbackPriceConfig = {
@@ -54,8 +54,17 @@ const promotionDefinitions = {
     blocksConsents: true,
     scopes: ["all_services_except", "one_time_fee"]
   },
-  banner: { label: "Promocja Banerowa", eligibility: "both", blocksConsents: true, scopes: ["all_services_except"] },
   choose_gift: { label: "Wybierz swój prezent", eligibility: "existing", blocksConsents: false, scopes: ["gift"] }
+};
+
+const additionalPromotionDefinitions = {
+  banner: {
+    label: "Promocja Banerowa",
+    eligibility: "both",
+    blocksConsents: true,
+    scopes: ["all_services_except"],
+    duration: 1
+  }
 };
 
 const giftDefinitions = {
@@ -87,7 +96,10 @@ const giftDefinitions = {
 };
 
 const compatibilityMatrix = {
-  banner: ["choose_gift"],
+  none: ["banner"],
+  six_for_one: ["banner"],
+  ztr_2026: ["banner"],
+  comeback_multiplay: ["banner"],
   choose_gift: ["banner"]
 };
 
@@ -156,7 +168,7 @@ function normalizeState() {
 
   if (!isPromotionEligible(state.promotionType)) {
     state.promotionType = "none";
-    state.bannerCombined = false;
+    state.bannerPromoEnabled = false;
   }
 
   if (state.promotionType !== "choose_gift") {
@@ -171,7 +183,7 @@ function normalizeState() {
   state.externalRemainingMonths = Math.max(1, Number(state.externalRemainingMonths) || 1);
 
   if (!canCombinePromotions(state.promotionType, "banner")) {
-    state.bannerCombined = false;
+    state.bannerPromoEnabled = false;
   }
 }
 
@@ -226,7 +238,6 @@ function getPromotionDuration(type) {
   if (type === "six_for_one") return state.commitment === 24 ? 6 : 3;
   if (type === "ztr_2026") return Math.min(12, state.externalRemainingMonths, state.commitment);
   if (type === "comeback_multiplay") return Math.min(24, state.externalRemainingMonths + 3, state.commitment);
-  if (type === "banner") return 1;
   if (type === "choose_gift") {
     if (state.promotionGiftType === "subscription_discount") return 1;
     if (state.promotionGiftType === "wifi_premium_discount") return 12;
@@ -235,10 +246,9 @@ function getPromotionDuration(type) {
   return 0;
 }
 
-function getActivePromotions() {
-  const promotions = [];
-  if (state.promotionType !== "none") {
-    promotions.push({ type: state.promotionType, duration: getPromotionDuration(state.promotionType) });
+function getMainSubscriptionPromotionMonths() {
+  if (["six_for_one", "ztr_2026", "comeback_multiplay"].includes(state.promotionType)) {
+    return getPromotionDuration(state.promotionType);
   }
   if (state.bannerCombined && canCombinePromotions(state.promotionType, "banner")) {
     promotions.push({ type: "banner", duration: getPromotionDuration("banner") });
@@ -246,22 +256,64 @@ function getActivePromotions() {
   return promotions;
 }
 
-function applyPromotionsForMonth(baseCalc, month, activePromotions) {
+  if (state.promotionType === "choose_gift" && state.promotionGiftType === "subscription_discount") {
+    return getPromotionDuration("choose_gift");
+  }
+
+  return 0;
+}
+
+function getBannerExtensionMonths(mainSubscriptionMonths) {
+  const isAllowed = canCombinePromotions(state.promotionType, "banner") || state.promotionType === "none";
+
+  if (!state.bannerPromoEnabled || !isAllowed) {
+    return 0;
+  }
+
+  return additionalPromotionDefinitions.banner.duration;
+}
+
+function buildSubscriptionPromoSchedule() {
+  const mainMonths = Math.min(getMainSubscriptionPromotionMonths(), state.commitment);
+  const bannerMonths = getBannerExtensionMonths(mainMonths);
+  const totalMonths = Math.min(state.commitment, mainMonths + bannerMonths);
+
+  return {
+    mainMonths,
+    bannerMonths,
+    totalMonths
+  };
+}
+
+function getActivePromotions() {
+  const promotions = [];
+  if (state.promotionType !== "none") {
+    promotions.push({ type: state.promotionType, duration: getPromotionDuration(state.promotionType) });
+  }
+
+  if (state.bannerPromoEnabled && (canCombinePromotions(state.promotionType, "banner") || state.promotionType === "none")) {
+    promotions.push({ type: "banner", duration: additionalPromotionDefinitions.banner.duration });
+  }
+
+  return promotions;
+}
+
+function applyPromotionsForMonth(baseCalc, month, activePromotions, subscriptionSchedule) {
   let monthPrice = baseCalc.monthly;
   let blocksConsents = false;
   let nonFinancialBenefits = [];
+
+  if (month <= subscriptionSchedule.totalMonths) {
+    monthPrice = 1;
+    blocksConsents = true;
+  }
 
   for (const promo of activePromotions) {
     const active = month <= promo.duration;
     if (!active) continue;
 
-    if (promotionDefinitions[promo.type]?.blocksConsents) {
+    if (promotionDefinitions[promo.type]?.blocksConsents || additionalPromotionDefinitions[promo.type]?.blocksConsents) {
       blocksConsents = true;
-    }
-
-    if (["six_for_one", "ztr_2026", "comeback_multiplay", "banner"].includes(promo.type)) {
-      monthPrice = 1;
-      continue;
     }
 
     if (promo.type === "choose_gift") {
@@ -271,7 +323,7 @@ function applyPromotionsForMonth(baseCalc, month, activePromotions) {
 
       if (state.promotionGiftType === "subscription_discount") {
         monthPrice = 1;
-      } else if (state.promotionGiftType === "wifi_premium_discount" && state.wifiCount > 0) {
+      } else if (state.promotionGiftType === "wifi_premium_discount" && state.wifiCount > 0 && monthPrice !== 1) {
         monthPrice -= baseCalc.wifiMonthlyPerUnit;
         monthPrice += 1;
       } else if (state.promotionGiftType === "router_replacement") {
@@ -292,12 +344,13 @@ function applyPromotionsForMonth(baseCalc, month, activePromotions) {
 }
 
 function buildMonthlyTimeline(baseCalc, activePromotions) {
+  const subscriptionSchedule = buildSubscriptionPromoSchedule();
   const rows = [];
   let totalSavings = 0;
   let nonFinancialBenefits = new Set();
 
   for (let month = 1; month <= state.commitment; month += 1) {
-    const result = applyPromotionsForMonth(baseCalc, month, activePromotions);
+    const result = applyPromotionsForMonth(baseCalc, month, activePromotions, subscriptionSchedule);
     rows.push(result.finalMonthly);
     totalSavings += result.savings;
     result.nonFinancialBenefits.forEach((name) => nonFinancialBenefits.add(name));
@@ -312,7 +365,8 @@ function buildMonthlyTimeline(baseCalc, activePromotions) {
     rows,
     totalSavings: Number(totalSavings.toFixed(2)),
     avgMonthly: Number((rows.reduce((sum, value) => sum + value, 0) / state.commitment).toFixed(2)),
-    nonFinancialBenefits: [...nonFinancialBenefits]
+    nonFinancialBenefits: [...nonFinancialBenefits],
+    subscriptionSchedule
   };
 }
 
@@ -405,7 +459,7 @@ function renderPromotionConfigurator() {
   const notes = document.getElementById("promotion-business-notes");
   if (!select || !helper || !configFields || !notes) return;
 
-  const options = ["none", "six_for_one", "ztr_2026", "comeback_multiplay", "banner", "choose_gift"];
+  const options = ["none", "six_for_one", "ztr_2026", "comeback_multiplay", "choose_gift"];
   select.innerHTML = options
     .map((type) => {
       const disabled = !isPromotionEligible(type);
@@ -438,12 +492,13 @@ function renderPromotionConfigurator() {
     `);
   }
 
-  if (canCombinePromotions(state.promotionType, "banner")) {
+  if (canCombinePromotions(state.promotionType, "banner") || state.promotionType === "none") {
     parts.push(`
       <label class="promo-checkbox-row">
-        <input type="checkbox" id="banner-combined-checkbox" ${state.bannerCombined ? "checked" : ""} />
+        <input type="checkbox" id="banner-combined-checkbox" ${state.bannerPromoEnabled ? "checked" : ""} />
         <span>Połącz z „Promocją Banerową” (1 mies. za 1 zł)</span>
       </label>
+      <div class="helper-text">Promocja Banerowa dodaje 1 dodatkowy miesiąc abonamentu za 1 zł po zakończeniu głównego okresu promocji abonamentowej.</div>
     `);
   }
 
@@ -453,7 +508,7 @@ function renderPromotionConfigurator() {
   if (selectedPromo?.blocksConsents || (state.promotionType === "choose_gift" && giftDefinitions[state.promotionGiftType]?.blocksConsents)) {
     businessNotes.push("W okresie promocyjnym wyłączone są rabaty marketing i e-faktura.");
   }
-  if (!canCombinePromotions(state.promotionType, "banner") && state.promotionType !== "none" && state.promotionType !== "banner") {
+  if (!canCombinePromotions(state.promotionType, "banner") && state.promotionType !== "none") {
     businessNotes.push("Wybrana promocja nie łączy się z dodatkowymi promocjami (brak jawnej zgody w macierzy łączalności). ");
   }
   notes.textContent = businessNotes.join(" ");
@@ -514,8 +569,22 @@ function updateSummary(baseCalc, timeline, activePromotions) {
   }
 
   const promoRows = activePromotions.map((promo) => {
+    if (promo.type === "banner") {
+      const mainMonths = timeline.subscriptionSchedule.mainMonths;
+      const fromMonth = mainMonths + 1;
+      const toMonth = mainMonths + timeline.subscriptionSchedule.bannerMonths;
+      const rangeLabel = fromMonth === toMonth ? `${fromMonth}. mies.` : `${fromMonth}–${toMonth}. mies.`;
+      return `<div class="promo-summary-row"><strong>${additionalPromotionDefinitions.banner.label}</strong><span>Dodatkowy okres abonamentowy: ${rangeLabel} za 1 zł</span></div>`;
+    }
+    return `<div class="promo-summary-row"><strong>${promotionDefinitions[promo.type].label}</strong><span>Okres: ${promo.duration} mies.</span></div>`;
+  });
+
     if (promo.type === "choose_gift") {
-      return `<div class="promo-summary-row"><strong>${promotionDefinitions[promo.type].label}</strong><span>${giftDefinitions[state.promotionGiftType].label}, okres: ${promo.duration} mies.</span></div>`;
+      const giftLabel = giftDefinitions[state.promotionGiftType].label;
+      const giftDetails = promo.duration > 0
+        ? `${giftLabel}, okres: ${promo.duration} mies.`
+        : `${giftLabel}, benefit bez wpływu na miesięczny abonament`;
+      return `<div class="promo-summary-row"><strong>${promotionDefinitions[promo.type].label}</strong><span>${giftDetails}</span></div>`;
     }
     return `<div class="promo-summary-row"><strong>${promotionDefinitions[promo.type].label}</strong><span>Okres: ${promo.duration} mies.</span></div>`;
   });
@@ -611,7 +680,7 @@ function bindPromotionControls() {
     }
 
     if (target.id === "banner-combined-checkbox") {
-      state.bannerCombined = target.checked;
+      state.bannerPromoEnabled = target.checked;
       render();
     }
   });
