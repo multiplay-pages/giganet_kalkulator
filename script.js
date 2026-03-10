@@ -250,6 +250,11 @@ function getMainSubscriptionPromotionMonths() {
   if (["six_for_one", "ztr_2026", "comeback_multiplay"].includes(state.promotionType)) {
     return getPromotionDuration(state.promotionType);
   }
+  if (state.bannerCombined && canCombinePromotions(state.promotionType, "banner")) {
+    promotions.push({ type: "banner", duration: getPromotionDuration("banner") });
+  }
+  return promotions;
+}
 
   if (state.promotionType === "choose_gift" && state.promotionGiftType === "subscription_discount") {
     return getPromotionDuration("choose_gift");
@@ -571,6 +576,8 @@ function updateSummary(baseCalc, timeline, activePromotions) {
       const rangeLabel = fromMonth === toMonth ? `${fromMonth}. mies.` : `${fromMonth}–${toMonth}. mies.`;
       return `<div class="promo-summary-row"><strong>${additionalPromotionDefinitions.banner.label}</strong><span>Dodatkowy okres abonamentowy: ${rangeLabel} za 1 zł</span></div>`;
     }
+    return `<div class="promo-summary-row"><strong>${promotionDefinitions[promo.type].label}</strong><span>Okres: ${promo.duration} mies.</span></div>`;
+  });
 
     if (promo.type === "choose_gift") {
       const giftLabel = giftDefinitions[state.promotionGiftType].label;
