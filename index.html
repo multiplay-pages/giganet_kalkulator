@@ -309,6 +309,29 @@
           </div>
         </div>
       </section>
+      <!-- PROMOCJE -->
+      <section class="panel">
+        <div class="panel-head">
+          <div class="step-badge step-pink">5</div>
+          <div>
+            <h2>Promocje i benefity</h2>
+            <p>Wybierz promocję zgodnie z regulaminem i statusem klienta.</p>
+          </div>
+        </div>
+
+        <div class="config-block">
+          <label class="block-label" for="promotion-type-select">Promocja główna</label>
+          <select id="promotion-type-select" class="promo-select"></select>
+          <div class="helper-text" id="promotion-type-helper"></div>
+        </div>
+
+        <div class="config-block" id="promotion-config-fields"></div>
+
+        <div class="config-block">
+          <div class="helper-text" id="promotion-business-notes"></div>
+        </div>
+      </section>
+
     </section>
 
     <!-- PRAWA KOLUMNA -->
@@ -367,42 +390,9 @@
 
           <div class="divider"></div>
 
-          <div class="promo-sliders-section">
-            <div class="block-label">Promocje</div>
-
-            <div class="slider-group">
-              <div class="slider-header">
-                <span class="slider-label">🎁 Miesiące za 1 zł</span>
-                <span class="slider-value" id="promo1zl-value">0 mies.</span>
-              </div>
-              <input
-                type="range"
-                id="promo1zl-slider"
-                min="0"
-                max="24"
-                step="1"
-                value="0"
-                class="promo-slider"
-              />
-              <div class="slider-info" id="promo1zl-saving">Oszczędność: 0 zł</div>
-            </div>
-
-            <div class="slider-group" id="promo-wifi-group" style="display:none;">
-              <div class="slider-header">
-                <span class="slider-label">📶 WiFi Premium za 1 zł</span>
-                <span class="slider-value" id="promoWifi-value">0 mies.</span>
-              </div>
-              <input
-                type="range"
-                id="promoWifi-slider"
-                min="0"
-                max="24"
-                step="1"
-                value="0"
-                class="promo-slider"
-              />
-              <div class="slider-info" id="promoWifi-saving">Oszczędność: 0 zł</div>
-            </div>
+          <div class="summary-price-card promo-active-card">
+            <div class="small-label">Aktywna promocja i benefity</div>
+            <div id="active-promotion-summary" class="active-promotion-summary"></div>
           </div>
 
           <div class="summary-price-card avg-price-card">

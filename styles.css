@@ -781,3 +781,51 @@ button {
   font-size: 14px;
   font-weight: 700;
 }
+
+
+.promo-select,
+.promo-input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.92);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.promo-input {
+  max-width: 220px;
+}
+
+.promo-checkbox-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.promo-active-card {
+  margin-top: 10px;
+}
+
+.active-promotion-summary {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.promo-summary-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+}
+
+.promo-summary-row span {
+  color: var(--muted);
+}
