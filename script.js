@@ -16,6 +16,7 @@ const state = {
   promotionType: "none",
   promotionGiftType: "subscription_discount",
   externalRemainingMonths: 1,
+  retentionMonths: 1, 
   bannerPromoEnabled: false
 };
 
@@ -59,6 +60,12 @@ const promotionDefinitions = {
     eligibility: "existing",
     blocksConsents: false,
     scopes: ["gift"]
+  },
+  retention: { 
+    label: "Promocja Utrzymaniowa",
+    eligibility: "existing",
+    blocksConsents: true,
+    scopes: ["all_services_except"]
   }
 };
 
@@ -104,7 +111,8 @@ const compatibilityMatrix = {
   six_for_one: ["banner"],
   ztr_2026: ["banner"],
   comeback_multiplay: ["banner"],
-  choose_gift: ["banner"]
+  choose_gift: ["banner"],
+  retention: ["banner"] 
 };
 
 let priceConfig = fallbackPriceConfig;
@@ -200,6 +208,7 @@ function normalizeState() {
   }
 
   state.externalRemainingMonths = Math.max(1, Number(state.externalRemainingMonths) || 1);
+  state.retentionMonths = Math.max(1, Math.min(24, Number(state.retentionMonths) || 1));
 
   if (!canCombinePromotions(state.promotionType, "banner")) {
     state.bannerPromoEnabled = false;
@@ -269,6 +278,7 @@ function getPromotionDuration(type) {
   if (type === "six_for_one") return state.commitment === 24 ? 6 : 3;
   if (type === "ztr_2026") return Math.min(12, state.externalRemainingMonths, state.commitment);
   if (type === "comeback_multiplay") return Math.min(24, state.externalRemainingMonths + 3, state.commitment);
+  if (type === "retention") return Math.min(state.retentionMonths, state.commitment); 
 
   if (type === "choose_gift") {
     if (state.promotionGiftType === "subscription_discount") return 1;
@@ -281,7 +291,7 @@ function getPromotionDuration(type) {
 }
 
 function getMainSubscriptionPromotionMonths() {
-  if (["six_for_one", "ztr_2026", "comeback_multiplay"].includes(state.promotionType)) {
+  if (["six_for_one", "ztr_2026", "comeback_multiplay", "retention"].includes(state.promotionType)) {
     return getPromotionDuration(state.promotionType);
   }
 
@@ -506,7 +516,7 @@ function renderPromotionConfigurator() {
 
   if (!select || !helper || !configFields || !notes) return;
 
-  const options = ["none", "six_for_one", "ztr_2026", "comeback_multiplay", "choose_gift"];
+  const options = ["none", "six_for_one", "ztr_2026", "comeback_multiplay", "choose_gift", "retention"];
 
   select.innerHTML = options
     .map((type) => {
@@ -518,7 +528,7 @@ function renderPromotionConfigurator() {
   select.value = state.promotionType;
 
   helper.textContent = state.status === "Nowy"
-    ? "Dla nowego klienta niedostępny jest wariant „Wybierz swój prezent”."
+    ? "Dla nowego klienta niedostępny jest wariant „Wybierz swój prezent” oraz „Promocja Utrzymaniowa”."
     : "Dla obecnego klienta niedostępne są promocje: 6 za 1, ZTR 2026 i Powrót do Multiplay.";
 
   const parts = [];
@@ -528,6 +538,14 @@ function renderPromotionConfigurator() {
       <label class="block-label" for="external-months-input">Miesiące pozostałe u obecnego operatora</label>
       <input id="external-months-input" class="promo-input" type="number" min="1" max="30" value="${state.externalRemainingMonths}" />
       <div class="helper-text">${state.promotionType === "ztr_2026" ? "Maksymalnie 12 miesięcy promocji." : "Promocja = wpisane miesiące + 3, maksymalnie 24 miesiące."}</div>
+    `);
+  }
+  
+  if (state.promotionType === "retention") {
+    parts.push(`
+      <label class="block-label" for="retention-months-input">Ilość miesięcy promocyjnych (po 1 zł)</label>
+      <input id="retention-months-input" class="promo-input" type="number" min="1" max="24" value="${state.retentionMonths}" />
+      <div class="helper-text">Rabatuje wszystkie usługi do 1 zł miesięcznie przez wybraną liczbę miesięcy.</div>
     `);
   }
 
@@ -681,24 +699,10 @@ function bindSelectCards() {
     const group = button.dataset.group;
     const rawValue = button.dataset.value;
 
-    if (!group) {
-      console.warn("[kalkulator] select-card bez data-group:", button);
-      return;
-    }
-
-    if (!(group in state)) {
-      console.warn(`[kalkulator] Nieznane data-group="${group}" (brak w state).`, button);
-      return;
-    }
-
-    if (rawValue === undefined) {
-      console.warn(`[kalkulator] Brak data-value dla data-group="${group}".`, button);
-      return;
-    }
-
-    if (button.dataset.boundClick === "1") {
-      return;
-    }
+    if (!group) return;
+    if (!(group in state)) return;
+    if (rawValue === undefined) return;
+    if (button.dataset.boundClick === "1") return;
 
     button.addEventListener("click", () => {
       let value = rawValue;
@@ -717,19 +721,9 @@ function bindToggleCards() {
   buttons.forEach((button) => {
     const key = button.dataset.toggle;
 
-    if (!key) {
-      console.warn("[kalkulator] toggle-card bez data-toggle:", button);
-      return;
-    }
-
-    if (!(key in state)) {
-      console.warn(`[kalkulator] Nieznane data-toggle="${key}" (brak w state).`, button);
-      return;
-    }
-
-    if (button.dataset.boundClick === "1") {
-      return;
-    }
+    if (!key) return;
+    if (!(key in state)) return;
+    if (button.dataset.boundClick === "1") return;
 
     button.addEventListener("click", () => {
       if (key === "symmetric" && state.tariff === "2000/2000") return;
@@ -793,6 +787,11 @@ function bindPromotionControls() {
 
     if (target.id === "external-months-input") {
       state.externalRemainingMonths = Number(target.value);
+      render();
+    }
+    
+    if (target.id === "retention-months-input") {
+      state.retentionMonths = Number(target.value);
       render();
     }
 
