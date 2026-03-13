@@ -782,7 +782,6 @@ button {
   font-weight: 700;
 }
 
-
 .promo-select,
 .promo-input {
   width: 100%;
@@ -797,6 +796,16 @@ button {
 
 .promo-input {
   max-width: 220px;
+}
+
+/* Ukrycie przeglądarkowych strzałek w polach liczbowych */
+input[type="number"].promo-input::-webkit-inner-spin-button,
+input[type="number"].promo-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"].promo-input {
+  -moz-appearance: textfield; /* Dla Firefoxa */
 }
 
 .promo-checkbox-row {
